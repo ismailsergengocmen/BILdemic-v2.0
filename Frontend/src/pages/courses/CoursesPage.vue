@@ -40,19 +40,13 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import LectureManager from '../../classes/LectureManager'
-import { useStore } from 'vuex'
+import { Store } from '../../store/index'
 
 export default {
   name: "CoursesPage", 
-  computed: {
-    lectures() {
-      const lm = LectureManager.getInstance(); 
-      return lm.getLectures(useStore().state.settings.currentUserUID);
-    }
-  },
   setup(props, ctx) {
     const $q = useQuasar();
 
@@ -64,8 +58,32 @@ export default {
 
     const register = ref(false);
     const enrollCode = ref(null);
+    const lectures = ref(null);
 
     const lm = LectureManager.getInstance()
+
+    const getLectures = async () => {
+      // const UID = Store.state.settings.currentUserUID;
+      // const db = getDatabase();
+      // const reference = r(db, `Users/${UID}/Lectures/`);
+
+      // onValue(reference, (snapshot) => {
+      //     let lect = [];
+      //     const data = snapshot.val();
+      //     for (const [key, value] of Object.entries(data)) {
+      //       lect.push(value)
+      //     }
+      //     lectures.value = null;
+      //     lectures.value = lect;   
+      // })
+      lm.getLectures(Store.state.settings.currentUserUID).then((val) => {
+        lectures.value = val.val();
+      })
+    };
+
+    onBeforeMount(async () => {
+      await getLectures();
+    });
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
@@ -80,16 +98,10 @@ export default {
       return "/~/courses/" + course.name.toLowerCase();
     }; 
 
-    const enrollToCourse = () => {
-      console.log('enrollCode: ', enrollCode.value);
-      lm.enrollStudentToCourse(enrollCode.value).then(() => {
-        console.log('OK');
-      })
-      .catch(() => {
-        console.log('Not ok');
-      })
+    const enrollToCourse = async () => {
+      await lm.enrollStudentToCourse(enrollCode.value);
+      await getLectures();
     }
-
 
     return {
       toggleDrawer,
@@ -97,7 +109,8 @@ export default {
       calculateRoute,
       register,
       enrollCode,
-      enrollToCourse
+      enrollToCourse,
+      lectures
     }
   },
 }

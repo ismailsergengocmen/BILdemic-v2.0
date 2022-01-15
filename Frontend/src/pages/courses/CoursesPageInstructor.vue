@@ -54,19 +54,14 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import LectureManager from '../../classes/LectureManager'
-import { useStore } from 'vuex'
+import { Store } from '../../store/index'
+import { getDatabase, onValue, ref as r } from 'firebase/database'
 
 export default {
   name: "CoursesPageInstructor",
-  computed: {
-    lectures() {
-      const lm = LectureManager.getInstance(); 
-      return lm.getLectures(useStore().state.settings.currentUserUID);
-    }
-  },
   setup(props, ctx) {
     const $q = useQuasar();
 
@@ -82,13 +77,37 @@ export default {
     const sectionNo = ref(null);
     const building = ref(null);
     const place = ref(null);
+    const lectures = ref(null);
 
     const lm = LectureManager.getInstance();
+
+    const getLectures = async () => {
+      // const UID = Store.state.settings.currentUserUID;
+      // const db = getDatabase();
+      // const reference = r(db, `Users/${UID}/Lectures/`);
+
+      // onValue(reference, (snapshot) => {
+      //     let lect = [];
+      //     const data = snapshot.val();
+      //     for (const [key, value] of Object.entries(data)) {
+      //       lect.push(value)
+      //     }
+      //     lectures.value = null;
+      //     lectures.value = lect;   
+      // })
+      lm.getLectures(Store.state.settings.currentUserUID).then((val) => {
+        lectures.value = val.val();
+      })
+    };
+
+    onBeforeMount(async () => {
+      await getLectures();
+    });
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
     })
-
+    
     const toggleDrawer = () => {
       open.value = !open.value
       ctx.emit('toggleDrawer');
@@ -100,6 +119,7 @@ export default {
 
     const createCourse = async (courseName, sectionNo, building, place) => {
       await lm.createCourse(courseName, sectionNo, building, place);
+      await getLectures();
     }
 
     return {
@@ -112,7 +132,8 @@ export default {
       courseCode,
       sectionNo,
       building,
-      place
+      place,
+      lectures
     }
   },
 }
