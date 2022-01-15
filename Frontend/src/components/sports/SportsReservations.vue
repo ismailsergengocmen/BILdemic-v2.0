@@ -4,7 +4,16 @@
       v-for="slot in slots" 
       :key="slot"
       :slots="slot"
-      />
+      @cancelReservations="cancelReservations"
+    />
+
+    <div v-if="noReservation" class="row justify-center">
+      <q-card outlined style="width: 50%;" class="q-pa-lg">
+          <div class="text-secondary text-weight-bold">
+            {{ $t("NoSportsReservation") }}
+          </div>
+      </q-card>
+    </div>
   </div>
 </template>
 
@@ -13,56 +22,18 @@ import MyReservations from "../reservation/MyReservations.vue"
 
 export default {
   name: "SportReservations",
+  props: ["slots", "noReservation"],
   components: {
     MyReservations
   },
-  computed: {
-    slots() {
-      return [
-        [
-          {
-            label: this.$t('ReservationPlace'), 
-            data:  'Main Campus Sports Hall'
-          },
-          {
-            label: this.$t('ReservationActivity'), 
-            data:  'Tennis'
-          },
-          {
-            label: this.$t('ReservationDate'), 
-            data:  '11/12/2021'
-          },
-          {
-            label: this.$t('ReservationTime'), 
-            data:  '08.30'
-          }
-        ],
-        [
-          {
-            label: this.$t('ReservationPlace'), 
-            data:  'Main Campus Sports Hall'
-          },
-          {
-            label: this.$t('ReservationActivity'), 
-            data:  'Tennis'
-          },
-          {
-            label: this.$t('ReservationDate'), 
-            data:  '11/12/2021'
-          },
-          {
-            label: this.$t('ReservationTime'), 
-            data:  '08.30'
-          }
-        ],
 
-      ]
-    },
-  },
+  setup(props, ctx) {
+    const cancelReservations = (OID) => {
+      ctx.emit('cancelReservations', OID);
+    };
 
-  setup() {
     return {
-
+      cancelReservations
     }
   },
 }

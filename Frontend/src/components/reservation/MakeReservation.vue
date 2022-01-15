@@ -1,8 +1,8 @@
 <template>
   <div class="row justify-center">
     <div outlined color="secondary" class="bordered">
-      <q-form class="q-gutter-y-md q-px-lg q-py-md full-width text-secondary" >
-        <div>
+      <q-form class="q-gutter-y-none q-px-lg q-py-md full-width text-secondary" >
+        <div class="q-mb-md">
           <b>{{ title }}</b>
         </div>
 
@@ -14,6 +14,7 @@
           outlined
           clearable
           :label="$t('SelectMealType')"
+          :rules="[val => !!val]"
         />
 
         <q-select
@@ -24,6 +25,7 @@
           outlined
           clearable
           :label="$t('SelectPlace')"
+          :rules="[val => !!val]"
         />
 
         <q-select
@@ -34,6 +36,7 @@
           outlined
           clearable
           :label="$t('SelectActivity')"
+          :rules="[val => !!val]"
         />
 
         <q-select
@@ -44,6 +47,7 @@
           outlined
           clearable
           :label="$t('SelectReservationDate')"
+          :rules="[val => !!val]"
         />
 
         <q-select
@@ -54,6 +58,7 @@
           outlined
           clearable
           :label="$t('SelectReservationTime')"
+          :rules="[val => !!val]"
         />
 
         <q-btn :label="$t('MakeReservation')" type="submit" color="secondary" @click.prevent="makeReservation"/>
@@ -101,19 +106,27 @@ export default {
     ]
 
     const makeReservation = () => {
-      let data;
+      let data = null;
 
-      if (props.type == 'diagnovir') {
+      if (props.type == 'diagnovir' && date.value != null && time.value != null) {
         data = { date: date.value, time: time.value };
       }
-      else if (props.type == 'sports') {
+      else if (props.type == 'sports' && place.value != null && date.value != null && time.value != null && activity.value != null) {
         data = { place: place.value, date: date.value, time: time.value, activity: activity.value };
       }
-      else if (props.type == 'meal') {
+      else if (props.type == 'meal' && place.value != null && date.value != null && time.value != null && meal.value != null) {
         data = { place: place.value, date: date.value, time: time.value, meal: meal.value };
       }
 
       ctx.emit('makeReservation', data);
+
+      if (data != null) {
+        meal.value = null;
+        place.value = null;
+        activity.value = null;
+        date.value = null;
+        time.value = null;
+      }
     }
 
     return {
