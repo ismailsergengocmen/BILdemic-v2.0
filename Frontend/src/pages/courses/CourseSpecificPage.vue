@@ -3,8 +3,8 @@
     <q-banner inline-actions class="text-white bg-secondary">
       <q-icon  v-if="isMobile" size="sm" name="menu" @click="toggleDrawer"/>
       <div class="column">
-        <span class="text-h5"> {{ lectureInfo._lectureName }} </span>
-        <span class="text-subtitle1"> {{ $t('Section') }} - {{ lectureInfo._section }} </span> 
+        <span class="text-h5"> {{ lectureInfo?._lectureName }} </span>
+        <span class="text-subtitle1"> {{ $t('Section') }} - {{ lectureInfo?._section }} </span> 
         <span class="text-subtitle1">  </span>
       </div>
     </q-banner>
@@ -32,7 +32,7 @@
 </template>
 
 <script> 
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import SeatingPlan from '../../components/courses/SeatingPlan.vue'
 import LectureManager from '../../classes/LectureManager'
@@ -54,161 +54,55 @@ export default {
 
     const lm = LectureManager.getInstance();
 
-    const lectureInfo = computed(() => {
-      return lm.getLecture(props.id) || {
-        "_lectureCode": "",
-        "_section": "",
-      }
-    })
+    const lectureInfo = ref(null);
+    const lectureCode = ref(null);
+    const lectureCodeIsCorrect = ref(false);
+    const firstTime = ref(null);
+    const personalCol = ref(null);
+    const personalRow = ref(null);
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
     })
+
+    onBeforeMount(async () => {
+      lm.getLecture(props.id).then((val) => {
+        lectureInfo.value = val.val();
+      });
+
+      lm.getSelectedStatus(props.id).then((val) => {
+        firstTime.value = !val.val();
+      });
+
+      lm.getMySeat(props.id).then((val) => {
+        personalCol.value = val.val()?.col;
+        personalRow.value = val.val()?.row;
+
+        console.log("personalCol.value: ", personalCol.value);
+        console.log("personalRow.value: ", personalRow.value);
+      });
+    });
 
     const toggleDrawer = () => {
       open.value = !open.value
       ctx.emit('toggleDrawer');
     }
 
-    const lectureCode = ref(null);
-    const lectureCodeIsCorrect = ref(false);
-
-    const firstTime = computed(() => {
-      return !lm.getSelectedStatus(props.id);
-    })
-
-    const checkLectureCode = () => {
-      console.log(lm.controlLectureCode(props.id, lectureCode.value));
-      lectureCodeIsCorrect.value = lm.controlLectureCode(props.id, lectureCode.value)
+    const checkLectureCode = async () => {
+      lectureCodeIsCorrect.value = await lm.controlLectureCode(props.id, lectureCode.value)
     }
 
-    const selectSeat = (val) => {
-      lm.setSeatOwner(props.id, val.row - 1, val.col - 1);
+    const selectSeat = async (val) => {
+      await lm.setSeatOwner(props.id, val.row - 1, val.col - 1);
+
+      personalCol.value = val.col - 1;
+      personalRow.value = val.row - 1;
+      firstTime.value = false;
     }
-
-    const personalCol = computed(() => {
-      if (!lm.getMySeat(props.id)) {
-        return 5;
-      } 
-      return lm.getMySeat(props.id).col;
-    }); 
-
-    const personalRow = computed(() => {
-      if (!lm.getMySeat(props.id)) {
-        return 5;
-      }
-      return lm.getMySeat(props.id).row;
-    }); 
-
-    const seatingPlan = [
-      [
-        {
-          status: "bg-green"
-        },
-        { 
-          status: "bg-yellow"
-        },
-        {
-          status: "bg-grey"
-        },
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-yellow"
-        }
-      ],
-      [
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-grey"
-        },
-      ],
-      [
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-grey"
-        },
-        {
-          status: "bg-black"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-grey"
-        }
-      ],
-      [
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-yellow"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-grey"
-        },
-        {
-          status: "bg-yellow"
-        }
-      ],
-      [
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-black"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-green"
-        }
-      ],
-      [
-        {
-          status: "bg-black"
-        },
-        {
-          status: "bg-yellow"
-        },
-        {
-          status: "bg-black"
-        },
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-green"
-        }
-      ],
-    ];
 
     return {
       toggleDrawer,
       isMobile,
-      seatingPlan,
       lectureCode,
       checkLectureCode,
       lectureCodeIsCorrect,

@@ -4,8 +4,8 @@
       <q-icon  v-if="isMobile" size="sm" name="menu" @click="toggleDrawer"/>
       
       <div class="column">
-        <span class="text-h5"> {{ lectureInfo['_lectureName'] }} </span>
-        <span class="text-subtitle1"> {{ $t('Section') }} - {{ lectureInfo['_section'] }} </span> 
+        <span class="text-h5"> {{ lectureInfo?._lectureName }} </span>
+        <span class="text-subtitle1"> {{ $t('Section') }} - {{ lectureInfo?._section }} </span> 
       </div>
     </q-banner>
     <div class="row items-center">
@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import SeatingPlan from '../../components/courses/SeatingPlan.vue'
 import LectureManager from '../../classes/LectureManager'
@@ -89,16 +89,18 @@ export default {
 
     const lm = LectureManager.getInstance();
 
-    const lectureInfo = computed(() => {
-      return lm.getLecture(props.id) || {
-        "_lectureCode": "",
-        "_section": "",
-      }
-    }) 
+    const lectureInfo = ref(null);
+    const lectureCode = ref(null);
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
     })
+
+    onBeforeMount(async () => {
+      lm.getLecture(props.id).then((val) => {
+        lectureInfo.value = val.val();
+      });
+    });
 
     const toggleDrawer = () => {
       open.value = !open.value
@@ -106,12 +108,11 @@ export default {
     }
 
     const generate = async () => { 
-      await lm.generateLectureCode(props.id)
-    }
-
-    const lectureCode = computed(() => {
-      return lm.getLectureCode(props.id); 
-    })
+      await lm.generateLectureCode(props.id);
+      lm.getLectureCode(props.id).then((val) => {
+        lectureCode.value = val.val();
+      });
+    }; 
 
     const seatingPlan = [
       [
