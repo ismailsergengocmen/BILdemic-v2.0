@@ -1,12 +1,9 @@
-# Group2H Society
- CS319 Term Project
+This is an updated version of BILdemic application
  
 **Team Members:**
--  Muhammed İkbal Doğan
 -  Ahmed Salih Cezayir
 -  İsmail Sergen Göçmen
 -  Ezgi Lena Sönmez
--  Egemen Öztürk
 
 
 Pandemic manager application is made for people who study or work in Bilkent University. Its mission is regulate Bilkent University life during the Covid-19 pandemic. There are 5 different user types: Students, Health center workers, Diagnovir Center workers, Instructors, and Cafeteria Employees.
@@ -38,4 +35,3 @@ Doctors from Bilkent Health Center will be able to get contact with the tested p
 -  Instructors
 -  Cafeteria Employees
 
-[Meeting Logs](grouplog.md)
