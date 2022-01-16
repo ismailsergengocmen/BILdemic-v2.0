@@ -12,11 +12,49 @@
       :hasTime="true" 
       :title="$t('MakeSportsApp')" 
       type="sports"
-      class="q-mt-xl" />  
+      class="q-mt-lg" 
+      @makeReservation="makeRes"
+    />  
 
-    <div class="column items-center q-mt-xl">
+    <div class="column items-center q-mt-md">
       <q-btn :label="$t('SeeSportsReservations')" color="secondary" style="width: 50%" to="/~/sports/reservations"/>
-    </div>  
+    </div>
+
+    <q-dialog v-model="reservationMade" seamless position="top">
+      <q-card style="width: 300px" class="bg-positive">
+        <q-card-section>
+          <q-banner dense inline-actions class="text-white bg-positive" >
+            <div class="row justify-center">
+            {{ $t("SportsReservationSuccessful") }}
+            </div>
+          </q-banner>
+        </q-card-section>
+      </q-card>
+    </q-dialog>  
+
+    <q-dialog v-model="reservationNotMade" seamless position="top">
+      <q-card style="width: 300px" class="bg-negative">
+        <q-card-section>
+          <q-banner dense inline-actions class="text-white bg-negative" >
+            <div class="row justify-center">
+            {{ $t("SportsReservationNotSuccessful") }}
+            </div>
+          </q-banner>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="emptySlotsError" seamless position="top">
+      <q-card style="width: 300px" class="bg-negative">
+        <q-card-section>
+          <q-banner dense inline-actions class="text-white bg-negative" >
+            <div class="row justify-center">
+            {{ $t("EmptySlotsError") }}
+            </div>
+          </q-banner>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
 
   </div>
 </template>
@@ -25,33 +63,12 @@
 import { computed, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import MakeReservation from '../../components/reservation/MakeReservation.vue'
+import SportManager from "../../classes/SportManager"
 
 export default {
   name: "SportsCenterPage",
   components: {
     MakeReservation
-  },
-  computed: {
-    slots() {
-      return [
-        {
-          label: this.$t('ReservationPlace'), 
-          data:  'Main Campus Sports Hall'
-        },
-        {
-          label: this.$t('ReservationActivity'), 
-          data:  'Tennis'
-        },
-        {
-          label: this.$t('ReservationDate'), 
-          data:  '11/12/2021'
-        },
-        {
-          label: this.$t('ReservationTime'), 
-          data:  '08.30'
-        }
-      ]
-    },
   },
 
   setup(props, ctx) {
@@ -62,12 +79,38 @@ export default {
     });
 
     const open = ref(!isMobile.value);
+    const reservationMade = ref(false);
+    const reservationNotMade = ref(false);
+    const emptySlotsError = ref(false);
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
     })
 
-    const hasReservation = ref(false);
+    const sm = SportManager.getInstance();
+
+    const makeRes = async (data) => {
+      if (data == null) {
+        emptySlotsError.value = true;
+        setTimeout(() => {
+          emptySlotsError.value = false;
+        }, 3000);
+      }
+      else {
+        sm.createSportRes(data.place, data.activity, data.date, data.time).then(() => {
+        reservationMade.value = true;
+        setTimeout(() => {
+          reservationMade.value = false;
+        }, 3000);
+      })
+      .catch(() => {
+        reservationNotMade.value = true;
+        setTimeout(() => {
+          reservationNotMade.value = false;
+        }, 3000);
+      });
+      }
+    }
 
     const toggleDrawer = () => {
       open.value = !open.value
@@ -77,7 +120,10 @@ export default {
     return {
       toggleDrawer,
       isMobile,
-      hasReservation
+      makeRes,
+      reservationMade,
+      reservationNotMade,
+      emptySlotsError
     }
   },
 }

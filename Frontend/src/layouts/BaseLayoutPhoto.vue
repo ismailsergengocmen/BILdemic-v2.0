@@ -15,8 +15,8 @@
             />
           </router-link>
 
-          <q-avatar size="90px" class="q-mb-sm bg-white" style="border: 1px solid #000">
-            <img src="../assets/default-profile-icon-24.jpg" size="100px">
+          <q-avatar size="90px" class="q-mb-sm bg-white">
+            <img src="../assets/profile_default.jpg" size="100px">
           </q-avatar>
           <div class="text-weight-bold text-black">Ezgi Lena Sönmez</div>
           <div class="text-weight-bold text-black">21802918</div>

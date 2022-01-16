@@ -86,8 +86,8 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { useStore } from 'vuex'
-import { signInWithEmailAndPassword, onAuthStateChanged, getAuth } from "firebase/auth"
 import LoginManager from "../../classes/LoginManager"
+import UserManager from "../../classes/UserManager"
 
 export default {
   name: "LoginForm",
@@ -106,11 +106,8 @@ export default {
       ctx.emit('forgot');
     }
 
-  // onAuthStateChanged(getAuth(), (user) => {
-  //   console.log('here: ', user);
-  // })
-
     const lm = LoginManager.getInstance();
+    const um = UserManager.getInstance();
 
     const signIn = async (email, password) => { 
       lm.signIn(email, password)
@@ -123,8 +120,10 @@ export default {
             }, 4000);
           }
           else {
-            $store.commit('settings/setCurrentUserRole', lm.getCurrentUserRole());
-            $store.commit('settings/setCurrentUserUID', userCredential.user.uid);
+            const UID = userCredential.user.uid;
+            const role = (await um.getUserInfo(UID)).val()._role;
+            $store.commit('settings/setCurrentUserRole', role);
+            $store.commit('settings/setCurrentUserUID', UID);
             router.push('/home');
           }  
         })

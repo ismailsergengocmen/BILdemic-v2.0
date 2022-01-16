@@ -7,7 +7,7 @@
         </div>
   
         <q-field 
-          v-for="slot in slots" 
+          v-for="slot in filteredSlots" 
           :key="slot.label" 
           outlined 
           stack-label
@@ -19,13 +19,19 @@
           </template>
         </q-field>
   
-        <q-btn :label="$t('CancelReservation')" type="submit" color="secondary"/>
+        <q-btn 
+          :label="$t('CancelReservation')" 
+          type="submit" 
+          color="secondary" 
+          @click.prevent="cancelReservations" 
+        />
       </q-form>
     </q-field>
   </div>
 </template>
 
 <script>
+import { computed } from "vue"
 
 export default {
   name: "MyReservations",
@@ -35,11 +41,17 @@ export default {
   },
   setup(props, ctx) {
     const cancelReservations = () => {
-      ctx.emit('cancelReservations')
+      const OID = props.slots[4].data;
+      ctx.emit('cancelReservations', OID);
     }
 
-    return {
+    const filteredSlots = computed(() => {
+      return props.slots.filter(item => item.label != 'OID');
+    });
 
+    return {
+      filteredSlots,
+      cancelReservations
     }
   },
 }
