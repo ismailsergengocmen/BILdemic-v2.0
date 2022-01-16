@@ -100,7 +100,8 @@ export default {
     }
 
     const cancelReservations = async (OID) => {
-      await sm.cancelOrder(OID);
+      const UID = Store.state.settings.currentUserUID;
+      await sm.cancelOrder(UID, OID);
       await getSportsReservations();
       reservationCancelled.value = true;
 

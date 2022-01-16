@@ -157,5 +157,6 @@ export default {
   SportsReservationCancelled: 'Spor randevunuz iptal edilmiştir',
   SportsReservationSuccessful: 'Spor randevusu alma işlemi başarılı',
   SportsReservationNotSuccessful: 'Spor randevusu işleminde sorun çıktı. Lütfen tekrar deneyin.',
-  EmptySlotsError: 'Lütfen istenen bölgelerin tamamını doldurun.'
+  EmptySlotsError: 'Lütfen istenen bölgelerin tamamını doldurun.',
+  NoSportsReservationsMade: 'Spor randevusu bulunmamaktadır.'
 }

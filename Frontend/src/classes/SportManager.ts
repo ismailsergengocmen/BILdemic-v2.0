@@ -23,7 +23,7 @@ export default class SportManager {
         const OID = sportActivity.OID;
 
         await set(ref(db, `Users/${UID}/_orders/Sports/${OID}`), sportActivity);
-        
+        await set(ref(db, `AllSportOrders/${OID}`), sportActivity);
     }
 
     public async getSportsRes(UID: string) {
@@ -32,10 +32,16 @@ export default class SportManager {
         return get(ref(db, `Users/${UID}/_orders/Sports`));
     }
 
-    public async cancelOrder(OID: string) {
+    public async cancelOrder(UID: string, OID: string) {
         const db = getDatabase();
-        const UID = getAuth().currentUser?.uid;
 
         await remove(ref(db, `Users/${UID}/_orders/Sports/${OID}`));
+        await remove(ref(db, `AllSportOrders/${OID}`));
+    }
+
+    public async getAllSportsRes() {
+        const db = getDatabase();
+
+        return get(ref(db, `AllSportOrders`));
     }
 }

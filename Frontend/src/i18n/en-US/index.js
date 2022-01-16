@@ -157,5 +157,6 @@ export default {
   SportsReservationCancelled: 'Sports reservation is cancelled',
   SportsReservationSuccessful: 'You successfully made a sports center reservation',
   SportsReservationNotSuccessful: 'There was a problem with sports center reservation. Please try again.',
-  EmptySlotsError: 'Please fill all the required fields.'
+  EmptySlotsError: 'Please fill all the required fields.',
+  NoSportsReservationsMade: 'There are no sports reservations'
 }

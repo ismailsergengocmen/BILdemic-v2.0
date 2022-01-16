@@ -31,7 +31,7 @@
         <q-select
           v-if="hasActivity"
           v-model="activity"
-          :options="datesArr"
+          :options="activityArr"
           color="secondary"
           outlined
           clearable
@@ -90,20 +90,24 @@ export default {
     
     const mealArr = [
       "Normal", "Vegetarian", "Vegan"
-    ]
+    ];
 
     // Get available slot info from db using type prop
     const datesArr = [
       "11.12.2021", "12.12.2021", "13.12.2021", "14.12.2021", "15.12.2021", "16.12.2021"
-    ]
+    ];
 
     const timesArr = [
       "08.30", "09.00", "09.30", "10.00", "10.30", "11.00"
-    ]
+    ];
 
     const placeArr = [
-      "78", "50", "90"
-    ]
+      "Main Campus Sports Hall", "East Campus Sports Hall", "Dormitories Sports Hall"
+    ];
+
+    const activityArr = [
+      "Tennis", "Football", "Basketball"
+    ];
 
     const makeReservation = () => {
       let data = null;
@@ -139,7 +143,8 @@ export default {
       datesArr,
       timesArr,
       makeReservation,
-      placeArr
+      placeArr,
+      activityArr
     } 
   },
 }
