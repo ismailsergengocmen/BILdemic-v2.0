@@ -32,11 +32,11 @@ export default {
   },
   setup(props, ctx) {
     const button1Clicked = () => {
-      ctx.emit('button1Clicked')
+      ctx.emit('button1Clicked', props.cardInfo)
     }
 
     const button2Clicked = () => {
-      ctx.emit('button2Clicked')
+      ctx.emit('button2Clicked', props.cardInfo)
     }
 
     return {

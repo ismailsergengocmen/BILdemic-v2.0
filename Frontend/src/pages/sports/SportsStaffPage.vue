@@ -1,9 +1,11 @@
 <template>
   <div> 
     <sports-reservations-staff 
-      :cardInfos="cardInfos"
+      :cardInfos="reservationCardInfos"
       class="q-pt-md"
+      @dismiss="dismiss"
     />
+
     <q-page-sticky position="bottom-left" :offset="fabPos" v-if="isMobile">
       <q-fab
         icon="mdi-chevron-right"
@@ -16,9 +18,11 @@
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import SportsReservationsStaff from '../../components/sports/SportsReservationsStaff.vue'
+import UserManager from '../../classes/UserManager'
+import SportManager from '../../classes/SportManager'
 
 export default {
   name: "SportsStaffPage",
@@ -39,51 +43,56 @@ export default {
       open.value = !isMobile.value;
     })
 
-    const hasReservation = ref(false);
-
     const toggleDrawer = () => {
       open.value = !open.value
       ctx.emit('toggleDrawer');
     }
 
-    const cardInfos = [
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "Ahmed Salih Cezayir",
-          21802918,
-          "Tenis",
-          "Merkez Kampüs Spor Salonu"
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "Asude Cezayir",
-          21802918,
-          "Tenis",
-          "Merkez Kampüs Spor Salonu"
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "İsmail Sergen Göçmen",
-          21802918,
-          "Tenis",
-          "Yurtlar Spor Salonu"
-        ]
+    const sm = SportManager.getInstance();
+    const um = UserManager.getInstance();
+    const reservationCardInfos = ref(null);
+
+    const getReservations = async () => {
+      const reservations = (await sm.getAllSportsRes()).val(); 
+      reservationCardInfos.value = [];
+
+      if (reservations) {
+        for (let key of Object.keys(reservations)) {
+          const UID = reservations[key]._ownerUID;
+          const user = (await um.getUserInfo(UID)).val();
+          const reserv = {
+            url: "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg",
+            data: [
+              user._name,
+              user?._ID,
+              reservations[key]._activity + " - " + reservations[key]._place,
+              reservations[key]._date + " - " + reservations[key]._time
+            ],
+            uniqueId: reservations[key]._OID,
+            owner: reservations[key]._ownerUID 
+          }
+
+          reservationCardInfos.value.push(reserv);
+        }
       }
-    ];
+    }
 
-    const fabPos = ref([ 18, 18 ])
+    onBeforeMount(async () => {
+      await getReservations();
+    })
 
+    const dismiss = async () => {
+      await getReservations();
+    };
+
+    const fabPos = ref([ 18, 18 ]);
+  
     return {
       toggleDrawer,
       isMobile,
-      hasReservation,
-      cardInfos,
+      reservationCardInfos,
       fabPos,
+      dismiss
     }
   },
 }

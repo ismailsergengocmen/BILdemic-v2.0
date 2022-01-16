@@ -1,5 +1,6 @@
 import SportActivity from "./SportActivity";
-import User from "./User";
+import { getDatabase, ref, set, get, remove } from "firebase/database";
+import { getAuth } from "firebase/auth";
 
 export default class SportManager {
 
@@ -14,13 +15,33 @@ export default class SportManager {
         return this.instance;
     }
 
-    public createSportRes(user:User, date:string, place:string, time:string):boolean {
-        //TO DO
-        return true;
+    public async createSportRes(place: string, activity: string, date: string, time: string) {
+        const UID = getAuth().currentUser?.uid || "";
+        const db = getDatabase();
+
+        const sportActivity = new SportActivity(place, time, date, UID, activity, false);
+        const OID = sportActivity.OID;
+
+        await set(ref(db, `Users/${UID}/_orders/Sports/${OID}`), sportActivity);
+        await set(ref(db, `AllSportOrders/${OID}`), sportActivity);
     }
 
-    public cancelOrder(sportActivity:SportActivity):boolean{
-        //TO DO
-        return true;
+    public async getSportsRes(UID: string) {
+        const db = getDatabase();
+
+        return get(ref(db, `Users/${UID}/_orders/Sports`));
+    }
+
+    public async cancelOrder(UID: string, OID: string) {
+        const db = getDatabase();
+
+        await remove(ref(db, `Users/${UID}/_orders/Sports/${OID}`));
+        await remove(ref(db, `AllSportOrders/${OID}`));
+    }
+
+    public async getAllSportsRes() {
+        const db = getDatabase();
+
+        return get(ref(db, `AllSportOrders`));
     }
 }

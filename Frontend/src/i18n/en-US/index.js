@@ -152,5 +152,11 @@ export default {
   NotVerifiedError: 'You need to verify your e-mail to be able to sign in. Please check your email and follow the instructions to verify your account.',
   HesCodeDigitError: 'HES Code should be 10 digit long',
   Section: 'Section',
-  CourseCode: 'Course Code'
+  CourseCode: 'Course Code',
+  NoSportsReservation: 'You do not have any sports center reservation',
+  SportsReservationCancelled: 'Sports reservation is cancelled',
+  SportsReservationSuccessful: 'You successfully made a sports center reservation',
+  SportsReservationNotSuccessful: 'There was a problem with sports center reservation. Please try again.',
+  EmptySlotsError: 'Please fill all the required fields.',
+  NoSportsReservationsMade: 'There are no sports reservations'
 }

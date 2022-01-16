@@ -152,5 +152,11 @@ export default {
   NotVerifiedError: 'Giriş yapabilmek için mailinizi doğrulamanız gerekmektedir. Lütfen mailinizi gelen talimatları takip ederek hesabınızı doğrulayın.',
   HesCodeDigitError: 'HES Kodu 10 haneden oluşmalıdır',
   Section: 'Şube',
-  CourseCode: 'Ders kodu'
+  CourseCode: 'Ders kodu',
+  NoSportsReservation: 'Spor randevunuz bulunmamaktadır',
+  SportsReservationCancelled: 'Spor randevunuz iptal edilmiştir',
+  SportsReservationSuccessful: 'Spor randevusu alma işlemi başarılı',
+  SportsReservationNotSuccessful: 'Spor randevusu işleminde sorun çıktı. Lütfen tekrar deneyin.',
+  EmptySlotsError: 'Lütfen istenen bölgelerin tamamını doldurun.',
+  NoSportsReservationsMade: 'Spor randevusu bulunmamaktadır.'
 }
