@@ -10,10 +10,11 @@ export default class Lecture {
   private _courseCode: string;
   private _lectureCode: number;
   private _LID: number;
-  private _seatPlan: Seat[] | null;
+  private _seatPlan: Seat[][] | null;
   private _attendanceRecord: Attendance[] | null;
+  private _selected: boolean;
 
-  public constructor(instructorName: string, lectureName: string, section: number, place: string, courseCode: string, lectureCode: number, LID: number){
+  public constructor(instructorName: string, lectureName: string, section: number, place: string, courseCode: string, lectureCode: number, LID: number, seatPlan: Seat[][]){
     this._instructorName = instructorName;
     this._lectureName = lectureName;
     this._section = section;
@@ -21,8 +22,9 @@ export default class Lecture {
     this._courseCode = courseCode;
     this._lectureCode = lectureCode;
     this._LID = LID;
-    this._seatPlan = null;
+    this._seatPlan = seatPlan;
     this._attendanceRecord = null;
+    this._selected = false;
   }
 
   public get instructorName(): string{
@@ -81,11 +83,20 @@ export default class Lecture {
     this._LID = value;
   }
 
-  public get seatPlan(): Seat[] | null {
+  public get selected(): boolean {
+    return this._selected;
+  }
+
+  public set selected(value: boolean) {
+    this._selected = value;
+  }
+
+
+  public get seatPlan(): Seat[][] | null {
     return this._seatPlan;
   }
 
-  public set seatPlan(value: Seat[] | null) {
+  public set seatPlan(value: Seat[][] | null) {
     this._seatPlan = value;
   }
 
@@ -96,4 +107,5 @@ export default class Lecture {
   public set attendanceRecord(value: Attendance[] | null) {
     this._attendanceRecord = value;
   }
+
 }

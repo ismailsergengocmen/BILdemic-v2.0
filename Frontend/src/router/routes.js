@@ -25,13 +25,14 @@ const routes = [
     path: '/',
     redirect: '/auth/login',
     component: BaseLayoutPhoto,
+    redirect: '/auth/login',
     children: [
       {
         path: 'home',
         name: 'Home',
         component: HomePage,
         meta: {
-          haveAccess: ['Student'] // TODO BURAYA INSTR GIREBILECEK MI?
+          haveAccess: ['Student', 'Instructor'] // TODO BURAYA INSTR GIREBILECEK MI?
         }
       }
     ]
@@ -50,9 +51,10 @@ const routes = [
         
       },
       {
-        path: 'courses/:course',
+        path: 'courses/:id',
         name: 'CourseSpecificPage',
         component: CourseSpecificPage,
+        props: true,
         meta: {
           haveAccess: ['Student']
         }
@@ -128,9 +130,10 @@ const routes = [
         }
       },
       {
-        path: 'courses/:course',
+        path: 'courses/:id',
         name: 'CourseSpecificPageInstructor',
         component: CoursesSpecificPageInstructor,
+        props: true,
         meta: {
           haveAccess: ['Instructor']
         }

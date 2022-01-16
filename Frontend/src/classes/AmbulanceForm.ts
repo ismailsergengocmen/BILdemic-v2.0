@@ -4,7 +4,7 @@ import User from './User'
 export default class AmbulanceForm extends Order {
   private _phoneNum: number;
 
-  public constructor(place: string, time: string, date: string, owner: User, phoneNumber: number) {
+  public constructor(place: string, time: string, date: string, owner: string, phoneNumber: number, OID:string) {
     super(place, time, date, owner, "AmbulanceForm");
 
     this._phoneNum = phoneNumber;

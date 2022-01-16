@@ -141,7 +141,7 @@ export default {
   IncorrectPassword: 'There was a problem logging in. Check your email and password or create an account.',
   RegisterDone: 'Account creation successful. Please verify your e-mail to activate your account.',
   ShortPasswordError: 'Password should be at least 8 characters long',
-  UseUniversityMailError1: 'Please use your Bilkent mail which ends with @ug.bilkent.edu.tr',
+  UseUniversityMailError1: 'Please use your Bilkent mail which ends with ug.bilkent.edu.tr',
   UseUniversityMailError2: 'Please use your Bilkent mail',
   InvalidMail: 'Invalid e-mail address',
   EmptySlotsError: 'Please fill all the required sections',
@@ -150,5 +150,7 @@ export default {
   PasswordResetError: 'We could not find an account with the given mail address. Please check the enter mail.',
   Back: 'Back',
   NotVerifiedError: 'You need to verify your e-mail to be able to sign in. Please check your email and follow the instructions to verify your account.',
-  HesCodeDigitError: 'HES Code should be 10 digit long'
+  HesCodeDigitError: 'HES Code should be 10 digit long',
+  Section: 'Section',
+  CourseCode: 'Course Code'
 }

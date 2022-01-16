@@ -4,17 +4,19 @@
     <q-banner inline-actions class="text-white bg-accent">
       <q-icon v-if="isMobile" size="sm" name="menu" @click="toggleDrawer"/>
       <b> {{ $t('CoursesPageInstrDesc') }} </b> 
-      <q-btn :label="$t('CreateCourse')" unelevated class="bg-secondary fixed-top-right q-mt-sm q-mr-sm" @click="create = true;"/>
+      <q-btn :label="$t('CreateCourse')" unelevated class="bg-secondary fixed-top-right q-mt-sm q-mr-sm" @click="create = true"/>
     </q-banner>
-    
+
     </div>
+
+    
     <div class="q-pa-md q-mx-xs row q-gutter-lg">
-      <router-link :to="calculateRoute(course)" v-for="course in courses" :key="course.name" class="my-card">
+      <router-link :to="`courses/${JSON.stringify(lecture['_LID'])}`" v-for="lecture in lectures" :key="lecture['_LID']" class="my-card">
         <q-card class="bg-secondary text-white">
           <q-card-section align="center" style="height:120px">
-            <div class="text-h6">{{ $t(course.name) }}</div>
-            <div class="text-h6">{{ $t(course.section) }}</div>
-            <div class="text-h6">{{ $t(course.building) }}</div>
+            <div class="text-h6">{{ lecture["_lectureName"] }}</div>
+            <div class="text-h6">{{ $t('Section') }} - {{ lecture["_section"] }}</div>
+            <div class="text-h6">{{ $t('CourseCode') }}:  {{ lecture["_courseCode"] }}</div>
           </q-card-section>
         </q-card>
       </router-link>
@@ -43,7 +45,7 @@
 
         <q-card-actions class="justify-between">
           <q-btn flat :label="$t('Cancel')" color="secondary" v-close-popup />
-          <q-btn flat :label="$t('CreateCourse')" color="secondary" @click="createCourse(courseName, sectionNo, building, place)"/>
+          <q-btn flat :label="$t('CreateCourse')" color="secondary" @click="createCourse(courseName, sectionNo, building, place)" v-close-popup/>
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -52,9 +54,11 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import LectureManager from '../../classes/LectureManager'
+import { Store } from '../../store/index'
+import { getDatabase, onValue, ref as r } from 'firebase/database'
 
 export default {
   name: "CoursesPageInstructor",
@@ -73,13 +77,37 @@ export default {
     const sectionNo = ref(null);
     const building = ref(null);
     const place = ref(null);
+    const lectures = ref(null);
 
     const lm = LectureManager.getInstance();
+
+    const getLectures = async () => {
+      // const UID = Store.state.settings.currentUserUID;
+      // const db = getDatabase();
+      // const reference = r(db, `Users/${UID}/Lectures/`);
+
+      // onValue(reference, (snapshot) => {
+      //     let lect = [];
+      //     const data = snapshot.val();
+      //     for (const [key, value] of Object.entries(data)) {
+      //       lect.push(value)
+      //     }
+      //     lectures.value = null;
+      //     lectures.value = lect;   
+      // })
+      lm.getLectures(Store.state.settings.currentUserUID).then((val) => {
+        lectures.value = val.val();
+      })
+    };
+
+    onBeforeMount(async () => {
+      await getLectures();
+    });
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
     })
-
+    
     const toggleDrawer = () => {
       open.value = !open.value
       ctx.emit('toggleDrawer');
@@ -90,51 +118,13 @@ export default {
     }; 
 
     const createCourse = async (courseName, sectionNo, building, place) => {
-      lm.createCourse(courseName, sectionNo, building, place).then(() => {
-        console.log("OLDU");
-      })
-      .catch((error) => {
-        console.log("ERROR: ", error);
-      })
+      await lm.createCourse(courseName, sectionNo, building, place);
+      await getLectures();
     }
-
-    const courses = [
-      {
-        name: "CS201",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "CS315",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "CS319",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "MATH225",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "MATH230",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "GE301",
-        section: "Section-01",
-        building: "B-202"
-      },
-    ]
 
     return {
       toggleDrawer,
       isMobile,
-      courses,
       createCourse,
       calculateRoute,
       create,
@@ -142,7 +132,8 @@ export default {
       courseCode,
       sectionNo,
       building,
-      place
+      place,
+      lectures
     }
   },
 }
@@ -151,7 +142,7 @@ export default {
 <style lang="sass" scoped>
 .my-card
   width: 100%
-  max-width: 200px
+  max-width: 300px
 
 a
   text-decoration: none

@@ -9,14 +9,14 @@
     
     </div>
     <div class="q-pa-md q-mx-xs row q-gutter-lg">
-      <router-link :to="calculateRoute(course)" v-for="course in courses" :key="course.name" class="my-card">
+      <router-link :to="`courses/${JSON.stringify(lecture['_LID'])}`" v-for="lecture in lectures" :key="lecture['_LID']" class="my-card">
         <q-card class="bg-secondary text-white">
           <q-card-section align="center" style="height:120px">
-            <div class="text-h6">{{ $t(course.name) }}</div>
-            <div class="text-h6">{{ $t(course.section) }}</div>
-            <div class="text-h6">{{ $t(course.building) }}</div>
+            <div class="text-h6">{{ lecture["_lectureName"] }}</div>
+            <div class="text-h6">Section-{{ lecture["_section"] }}</div>
+            <div class="text-h6">{{ lecture["_place"] }}</div>
           </q-card-section>
-        </q-card>
+        </q-card> 
       </router-link>
     </div>
 
@@ -31,7 +31,7 @@
 
         <q-card-actions class="justify-between">
           <q-btn flat :label="$t('Cancel')" color="secondary" v-close-popup />
-          <q-btn flat :label="$t('Enroll')" color="secondary" />
+          <q-btn flat :label="$t('Enroll')" color="secondary" v-close-popup @click="enrollToCourse" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -40,11 +40,13 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
+import LectureManager from '../../classes/LectureManager'
+import { Store } from '../../store/index'
 
 export default {
-  name: "CoursesPage",
+  name: "CoursesPage", 
   setup(props, ctx) {
     const $q = useQuasar();
 
@@ -56,6 +58,32 @@ export default {
 
     const register = ref(false);
     const enrollCode = ref(null);
+    const lectures = ref(null);
+
+    const lm = LectureManager.getInstance()
+
+    const getLectures = async () => {
+      // const UID = Store.state.settings.currentUserUID;
+      // const db = getDatabase();
+      // const reference = r(db, `Users/${UID}/Lectures/`);
+
+      // onValue(reference, (snapshot) => {
+      //     let lect = [];
+      //     const data = snapshot.val();
+      //     for (const [key, value] of Object.entries(data)) {
+      //       lect.push(value)
+      //     }
+      //     lectures.value = null;
+      //     lectures.value = lect;   
+      // })
+      lm.getLectures(Store.state.settings.currentUserUID).then((val) => {
+        lectures.value = val.val();
+      })
+    };
+
+    onBeforeMount(async () => {
+      await getLectures();
+    });
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
@@ -70,46 +98,19 @@ export default {
       return "/~/courses/" + course.name.toLowerCase();
     }; 
 
-    const courses = [
-      {
-        name: "CS201",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "CS315",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "CS319",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "MATH225",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "MATH230",
-        section: "Section-01",
-        building: "B-202"
-      },
-      {
-        name: "GE301",
-        section: "Section-01",
-        building: "B-202"
-      },
-    ]
+    const enrollToCourse = async () => {
+      await lm.enrollStudentToCourse(enrollCode.value);
+      await getLectures();
+    }
 
     return {
       toggleDrawer,
       isMobile,
-      courses,
       calculateRoute,
       register,
-      enrollCode
+      enrollCode,
+      enrollToCourse,
+      lectures
     }
   },
 }

@@ -10,14 +10,15 @@
       :slots="slots" 
       :title="$t('DiagnovirAppInfo')"
       class="q-mt-xl" />
-      
+
     <make-reservation 
       v-if="!hasReservation" 
       :hasDate="true" 
       :hasTime="true" 
       :title="$t('MakeDiagnovirApp')" 
       type="diagnovir"
-      class="q-mt-xl" />
+      class="q-mt-xl" 
+      @makeReservation="makeRes"/>
 
     <div class="column items-center q-mt-xl">
       <q-btn :label="$t('SeeTestResults')" color="secondary" style="width: 50%" to="/~/diagnovir/tests"/>
@@ -30,6 +31,7 @@ import { computed, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import MakeReservation from '../../components/reservation/MakeReservation.vue'
 import MyReservations from '../../components/reservation/MyReservations.vue'
+import DiagnovirManager from '../../classes/DiagnovirManager'
 
 export default {
   name: "DiagnovirPage",
@@ -39,19 +41,22 @@ export default {
   },
   computed: {
     slots() {
+      const dm = DiagnovirManager.getInstance();
+      const data = dm.getDiagnovirReservation();
+
       return [
         {
           label: this.$t('ReservationDate'), 
-          data:  '11/12/2021'
-        },
+          data:  data._date || ' '
+        }, 
         {
           label: this.$t('ReservationTime'), 
-          data:  '08.30'
+          data:  data._time || ' '
         },
         {
           label: this.$t('ReservationPlace'), 
-          data:  'Health Center'
-        }
+          data:  data._place || ' '
+        }   
       ]
     }
   },
@@ -69,17 +74,26 @@ export default {
       open.value = !isMobile.value;
     })
 
-    const hasReservation = ref(true);
+    const dm = DiagnovirManager.getInstance();
+
+    const hasReservation = computed(() => {
+      return Object.keys(dm.getDiagnovirReservation()).length !== 0;
+    });
 
     const toggleDrawer = () => {
       open.value = !open.value
       ctx.emit('toggleDrawer');
     }
 
+    const makeRes = async (data) => {
+      await dm.takeReservation(data.date, "B-block", data.time, "");
+    } 
+
     return {
       toggleDrawer,
       isMobile,
-      hasReservation
+      hasReservation,
+      makeRes
     }
   },
 }
