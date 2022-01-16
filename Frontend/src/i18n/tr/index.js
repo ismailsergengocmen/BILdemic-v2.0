@@ -2,6 +2,8 @@ export default {
   Email: 'E-posta',
   Password: 'Şifre',
   Register: 'Kayıt ol',
+  Phone: 'Telefon numarası',
+  Address: 'Adres',
   SignIn: 'Giriş yap',
   SignInUpperCase: 'GİRİŞ YAP',
   ForgotPassword: 'Unuttum',
@@ -158,5 +160,16 @@ export default {
   SportsReservationSuccessful: 'Spor randevusu alma işlemi başarılı',
   SportsReservationNotSuccessful: 'Spor randevusu işleminde sorun çıktı. Lütfen tekrar deneyin.',
   EmptySlotsError: 'Lütfen istenen bölgelerin tamamını doldurun.',
-  NoSportsReservationsMade: 'Spor randevusu bulunmamaktadır.'
+  NoSportsReservationsMade: 'Spor randevusu bulunmamaktadır.',
+  ChangePasswordClick: 'Şifrenizi değiştirmek için tıklayın.',
+  ChangePassword: 'Şifre Değiştirme',
+  Save: 'Kaydet',
+  CurrentPassword: 'Mevcut Şifre',
+  NewPassword: 'Yeni Şifre',
+  NewPasswordAgain: 'Yeni Şifre Tekrar',
+  PasswordNotMatching: 'Girilen şifreler eşleşmiyor!',
+  PasswordChangeSuccessful: 'Şifre değişimi başarılı',
+  WrongPassword: 'Hatalı şifre!',
+  UnexpectedError: 'Beklenmedik bir hata gerçekleşti. Lütfen tekrar deneyiniz.',
+  ProfilePage: 'Profil Sayfası' 
 }

@@ -1,6 +1,5 @@
-import User from "./User";
-import {getAuth} from "firebase/auth";
-import {getDatabase, ref, push, set, get, query, orderByChild, equalTo} from "firebase/database";
+import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword  } from "firebase/auth";
+import { getDatabase, ref, set, get } from "firebase/database";
 
 export default class SettingsManager {
 
@@ -76,5 +75,22 @@ export default class SettingsManager {
             await set(ref(db, `Users/${Uid}/HesCode`), hesCode); 
         return true;
         }
+    }
+
+    public async checkPassword(password: string) {
+        const currentUser = getAuth().currentUser;
+
+        // @ts-expect-error
+        const cred = EmailAuthProvider.credential(currentUser?.email, password);
+    
+        // @ts-expect-error
+        return reauthenticateWithCredential(currentUser, cred);
+    }
+
+    public async updatePassword(password: string) {
+        const currentUser = getAuth().currentUser;
+
+        // @ts-expect-error
+        return updatePassword(currentUser, password);
     }
 }

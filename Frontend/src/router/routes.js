@@ -19,6 +19,7 @@ import CoursesSpecificPageInstructor from "../pages/courses/CoursesSpecificPageI
 import SportsStaffPage from "../pages/sports/SportsStaffPage"
 import HealthCenterStaffPage from "../pages/health/HealthCenterStaffPage.vue"
 import DiagnovirStaffPage from "../pages/diagnovir/DiagnovirStaffPage.vue"
+import ProfilePage from "../pages/ProfilePage.vue"
 
 const routes = [
   {
@@ -114,6 +115,11 @@ const routes = [
         meta: {
           haveAccess: ['Student', 'Instructor']
         }
+      },
+      {
+        path: 'profile',
+        name: 'ProfilePage',
+        component: ProfilePage,
       },
     ]
   },

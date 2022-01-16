@@ -33,7 +33,7 @@ export default route(function (/* { store, ssrContext } */) {
 
   Router.beforeEach((to, from, next) => {
     onAuthStateChanged(getAuth(), (user) => {
-      if (to.name === "Login" || to.name === "Register") {
+      if (to.name === "Login" || to.name === "Register" || to.name === "ProfilePage") {
         next();
       }
       else if (user && (to.meta.haveAccess.includes(Store.state.settings.currentUserRole))) {

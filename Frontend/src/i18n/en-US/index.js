@@ -2,6 +2,8 @@ export default {
   Email: 'E-mail',
   Password: 'Password',
   Register: 'Register',
+  Phone: 'Phone number',
+  Address: 'Address',
   SignIn: 'Sign in',
   SignInUpperCase: 'SIGN IN',
   ForgotPassword: 'Forgot',
@@ -158,5 +160,16 @@ export default {
   SportsReservationSuccessful: 'You successfully made a sports center reservation',
   SportsReservationNotSuccessful: 'There was a problem with sports center reservation. Please try again.',
   EmptySlotsError: 'Please fill all the required fields.',
-  NoSportsReservationsMade: 'There are no sports reservations'
+  NoSportsReservationsMade: 'There are no sports reservations',
+  ChangePasswordClick: 'Click to change your password',
+  ChangePassword: 'Change Password',
+  Save: 'Save',
+  CurrentPassword: 'Current Password',
+  NewPassword: 'New Password',
+  NewPasswordAgain: 'New Password Again',
+  PasswordNotMatching: 'Entered passwords are not matching!',
+  PasswordChangeSuccessful: 'Password change is successfull',
+  WrongPassword: 'Wrong password!',
+  UnexpectedError: 'An unexpected error happened. Please try again.',
+  ProfilePage: 'Profile Page'
 }

@@ -47,7 +47,7 @@
             </div>
 
             <div class="fixed-bottom q-mb-sm">
-              <q-item clickable v-ripple style="min-height: 35px;" to="/~/settings" active-class="bg-teal-2">
+              <q-item clickable v-ripple style="min-height: 35px;" to="/~/profile" active-class="bg-teal-2">
                 <q-item-section class="q-ml-sm">
                   {{ $t('ProfileSettings') }}
                 </q-item-section>
