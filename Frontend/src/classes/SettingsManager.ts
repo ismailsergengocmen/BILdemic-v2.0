@@ -1,5 +1,6 @@
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword  } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
+import { getStorage, ref as refStorage, uploadBytes } from "firebase/storage";
 
 export default class SettingsManager {
 
@@ -56,5 +57,12 @@ export default class SettingsManager {
 
         // @ts-expect-error
         return updatePassword(currentUser, password);
+    }
+
+    public async uploadProfilePictureToStorage(UID: string, file: File) {
+        const storage = getStorage();
+        const storageReference = refStorage(storage, `Users/${UID}/ProfilePhoto`);
+        
+        return uploadBytes(storageReference, file);
     }
 }

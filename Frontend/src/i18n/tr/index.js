@@ -173,5 +173,8 @@ export default {
   UnexpectedError: 'Beklenmedik bir hata gerçekleşti. Lütfen tekrar deneyiniz.',
   ProfilePage: 'Profil Sayfası',
   HesCodeNotUpdated: 'Yeni girilen HES Kodu 10 karakterden oluşmalıdır. HES Kodu haricindeki bilgileriniz güncellenmiştir.',
-  ProfileUpdateSuccessful: 'Profil bilgileriniz başarılı bir şekilde güncellendi.'
+  ProfileUpdateSuccessful: 'Profil bilgileriniz başarılı bir şekilde güncellendi.',
+  UpdateProfilePicture: 'Profil Resmini Güncelle',
+  SelectNewProfilePhoto: 'Yeni profil resmi seçmek için tıklayın',
+  PhotoUploadSuccessful: 'Profil resmi başarıyla güncellendi.'
 }
