@@ -1,5 +1,5 @@
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword  } from "firebase/auth";
-import { getDatabase, ref, set, get } from "firebase/database";
+import { getDatabase, ref, set } from "firebase/database";
 
 export default class SettingsManager {
 
@@ -17,39 +17,12 @@ export default class SettingsManager {
         return this.instance;
     }
 
-    public async changeMail(mail:string){
-        const auth = getAuth();
-        const Uid = auth.currentUser?.uid;
-        const db = getDatabase();
-
-        let user = (await get(ref(db, `Users/${Uid}`))).val();
-        if(user){
-            await set(ref(db, `Users/${Uid}/Mail`), mail); 
-        }
-    }
-
-    public async changePassword(password:string){
-        const auth = getAuth();
-        const Uid = auth.currentUser?.uid;
-        const db = getDatabase();
-
-        let user = (await get(ref(db, `Users/${Uid}`))).val();
-        if(user){
-            await set(ref(db, `Users/${Uid}/Password`), password); 
-        }
-        return true;
-    }
-
     public async changePhone(phoneNum:string){
         const auth = getAuth();
         const Uid = auth.currentUser?.uid;
         const db = getDatabase();
 
-        let user = (await get(ref(db, `Users/${Uid}`))).val();
-        if(user){
-            await set(ref(db, `Users/${Uid}/PhoneNum`), phoneNum); 
-        }
-        return true;
+        await set(ref(db, `Users/${Uid}/_phoneNum`), phoneNum); 
     }
 
     public async changeAddress(address:string){
@@ -57,12 +30,7 @@ export default class SettingsManager {
         const Uid = auth.currentUser?.uid;
         const db = getDatabase();
 
-        let user = (await get(ref(db, `Users/${Uid}`))).val();
-        let currentAddress = (await get(ref(db, `Users/${Uid}`))).val();
-        if(user){
-            await set(ref(db, `Users/${Uid}/Address`), address); 
-        }
-        return true;
+        await set(ref(db, `Users/${Uid}/_address`), address); 
     }
 
     public async changeHES(hesCode:string){
@@ -70,11 +38,7 @@ export default class SettingsManager {
         const Uid = auth.currentUser?.uid;
         const db = getDatabase();
 
-        let user = (await get(ref(db, `Users/${Uid}`))).val();
-        if(user){
-            await set(ref(db, `Users/${Uid}/HesCode`), hesCode); 
-        return true;
-        }
+        await set(ref(db, `Users/${Uid}/_hesObject/_hesCode`), hesCode);
     }
 
     public async checkPassword(password: string) {

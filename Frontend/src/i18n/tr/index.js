@@ -171,5 +171,7 @@ export default {
   PasswordChangeSuccessful: 'Şifre değişimi başarılı',
   WrongPassword: 'Hatalı şifre!',
   UnexpectedError: 'Beklenmedik bir hata gerçekleşti. Lütfen tekrar deneyiniz.',
-  ProfilePage: 'Profil Sayfası' 
+  ProfilePage: 'Profil Sayfası',
+  HesCodeNotUpdated: 'Yeni girilen HES Kodu 10 karakterden oluşmalıdır. HES Kodu haricindeki bilgileriniz güncellenmiştir.',
+  ProfileUpdateSuccessful: 'Profil bilgileriniz başarılı bir şekilde güncellendi.'
 }

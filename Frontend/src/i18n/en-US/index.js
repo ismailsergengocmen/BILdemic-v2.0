@@ -171,5 +171,7 @@ export default {
   PasswordChangeSuccessful: 'Password change is successfull',
   WrongPassword: 'Wrong password!',
   UnexpectedError: 'An unexpected error happened. Please try again.',
-  ProfilePage: 'Profile Page'
+  ProfilePage: 'Profile Page',
+  HesCodeNotUpdated: 'Your new HES Code should consist of 10 digits!. Information excluding HES Code is updated accordingly.',
+  ProfileUpdateSuccessful: 'Your profile information is updated successfully.'
 }

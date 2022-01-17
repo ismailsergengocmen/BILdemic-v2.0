@@ -1,14 +1,20 @@
 <template>
   <div>
     <div class="column q-gutter-y-md">
-      <q-input 
-        class="col" 
+      <q-field 
         outlined 
+        :label="$t('FullName')" 
+        stack-label 
+        class="col" 
         dense 
-        :label="$t('FullName')"
-        v-model="name"
         color="secondary"
-      />
+      >
+        <template v-slot:control>
+          <div class="self-center full-width no-outline"> 
+            {{ name }} 
+          </div>
+        </template>
+      </q-field>
 
       <q-field 
         outlined 
@@ -25,15 +31,21 @@
         </template>
       </q-field>
 
-      <q-input 
+      <q-field 
         v-if="role === 'Student' || role === 'Instructor'"
-        class="col" 
         outlined 
+        :label="$t('ID')" 
+        stack-label 
+        class="col" 
         dense 
-        :label="$t('ID')"
-        v-model="id"
         color="secondary"
-      />
+      >
+        <template v-slot:control>
+          <div class="self-center full-width no-outline"> 
+            {{ id }} 
+          </div>
+        </template>
+      </q-field>
 
       <q-input 
         class="col" 
@@ -55,12 +67,13 @@
       />
 
       <q-input 
-        class="col" 
+        class="col q-pb-sm" 
         outlined 
         dense 
         :label="$t('HESCode')"
         v-model="hesCode"
         color="secondary"
+        :rules="[ val => val && val.length == 10 || $t('HesCodeDigitError')]"
       />
     </div>
 
@@ -81,7 +94,7 @@
         :label="`${$t('Save')}`" 
         color="secondary" 
         unelevated
-        @click="showPopup = true"
+        @click="save"
       />
     </div>
 
@@ -215,6 +228,10 @@ export default {
         else {
           sm.updatePassword(newPassword.value).then(() => {
             message.value = 2;
+            showMessage.value = true;
+            setTimeout(() => {
+              showMessage.value = false;
+            }, 3000);
 
             showPopup.value = false;
             currentPassword.value = null;
@@ -223,12 +240,11 @@ export default {
           })
           .catch(() => {
             message.value = 3;
+            showMessage.value = true;
+            setTimeout(() => {
+              showMessage.value = false;
+            }, 3000);
           });
-
-          showMessage.value = true;
-          setTimeout(() => {
-            showMessage.value = false;
-          }, 3000);
         }
       })
       .catch((val) => {
@@ -253,19 +269,56 @@ export default {
       else if (message.value == 3) {
         return t('UnexpectedError');
       }
-      else {
+      else if (message.value == 4) {
         return t('WrongPassword');
+      }
+      else if (message.value == 5) {
+        return t('ProfileUpdateSuccessful');
+      }
+      else {
+        return t('HesCodeNotUpdated');
       }
     });
 
     const dialogColor = computed(() => {
-      if (message.value == 2 ) {
+      if (message.value == 2 || message.value == 5) {
         return "bg-positive";
+      }
+      else if (message.value == 6) {
+        return "bg-indigo-6";
       }
       else {
         return "bg-negative";
       }
     })
+
+    const save = async () => {  
+      const currentPhoneNum = currentUser.value?._phoneNum;
+      const currentAddress = currentUser.value?._address;
+      const currentHESCode = currentUser.value?._hesObject._hesCode;
+
+      message.value = 5;
+
+      if (phone.value !== currentPhoneNum) {
+        await sm.changePhone(phone.value);
+      }
+      if (address.value !== currentAddress) {
+        await sm.changeAddress(address.value);
+      }
+      if (hesCode.value !== currentHESCode) {
+        if (hesCode.value.length !== 10) {
+          message.value = 6;
+        }
+        else {
+          await sm.changeHES(hesCode.value);
+        }
+      }
+
+      showMessage.value = true;
+      setTimeout(() => {
+        showMessage.value = false;
+      }, 3000);
+    }
 
     return {
       currentUser,
@@ -283,7 +336,8 @@ export default {
       changePassword,
       showMessage,
       dialogMessage,
-      dialogColor
+      dialogColor,
+      save
     }
   },
 }
