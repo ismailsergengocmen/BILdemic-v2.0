@@ -54,6 +54,9 @@
         :label="$t('Phone')"
         v-model="phone"
         color="secondary"
+        mask="(###) ### - ####"
+        unmasked-value
+        fill-mask
       />
 
       <q-input 
@@ -73,6 +76,9 @@
         :label="$t('HESCode')"
         v-model="hesCode"
         color="secondary"
+        mask="XXXX-XXXX-XX"
+        unmasked-value
+        fill-mask
         :rules="[ val => val && val.length == 10 || $t('HesCodeDigitError')]"
       />
     </div>

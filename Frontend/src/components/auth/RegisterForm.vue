@@ -104,7 +104,9 @@
       v-model="hes"
       color="secondary"
       :disable="loading"
-      mask="####-####-##"
+      mask="XXXX-XXXX-XX"
+      unmasked-value
+      fill-mask
       lazy-rules
       :rules="[ val => val && val.length == 12 || $t('HesCodeDigitError')]"
     />
