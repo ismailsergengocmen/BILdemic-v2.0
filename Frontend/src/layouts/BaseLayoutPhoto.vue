@@ -16,7 +16,7 @@
           </router-link>
 
           <q-avatar size="90px" class="q-mb-sm bg-white">
-            <img src="../assets/profile_default.jpg" size="100px">
+            <img :src="currentUser?._profilePic" size="100px">
           </q-avatar>
           <div class="text-weight-bold text-black"> {{ currentUser?._name }} </div>
           <div class="text-weight-bold text-black"> {{ currentUser?._ID }} </div>

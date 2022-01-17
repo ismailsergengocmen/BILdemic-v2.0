@@ -8,7 +8,7 @@
     <div class="q-pa-md column">
       <div class="row justify-center q-mb-md">
         <q-img 
-          src="https://placeimg.com/500/300/nature" 
+          :src="profilePhoto" 
           style="height: 140px; max-width: 150px" 
           class="my-img"
           @click="showPopup = true"
@@ -96,8 +96,9 @@
 <script>
 import ProfilePageForm from "../components/ProfilePageForm.vue"
 import { useQuasar } from "quasar"
-import { watch, computed, ref, onBeforeUnmount } from "vue"
+import { watch, computed, ref, onBeforeMount, onBeforeUnmount } from "vue"
 import SettingsManager from "../classes/SettingsManager"
+import UserManager from "../classes/UserManager"
 import { Store } from "../store/index"
 import { useI18n } from 'vue-i18n'
 
@@ -109,6 +110,7 @@ export default {
   setup(props, ctx) {
     const $q = useQuasar();
     const sm = SettingsManager.getInstance();
+    const um = UserManager.getInstance();
     const { t } = useI18n({});
 
     const isMobile = computed(() => {
@@ -137,6 +139,20 @@ export default {
     const isUploading =  computed(() => uploading.value !== null);
     const canUpload = computed(() => file.value !== null);
 
+    const profilePhoto = ref(null);
+
+    const getProfilePicture = async () => {
+      const currentUserUID = Store.state.settings.currentUserUID;
+      um.getUserInfo(currentUserUID).then((val) => {
+        const currentUser = val.val();
+        profilePhoto.value = currentUser._profilePic;
+      })
+    }
+
+    onBeforeMount(async () => {
+      await getProfilePicture();
+    })
+
     const cleanUp = () => {
       clearTimeout(uploading.value);
     }
@@ -146,7 +162,6 @@ export default {
     }
 
     const upload = async () => {
-      console.log(file.value);
       sm.uploadProfilePictureToStorage(Store.state.settings.currentUserUID, file.value).then((snapshot) => {
         file.value = null;
         showPopup.value = false;
@@ -156,6 +171,7 @@ export default {
           showUploadSuccessPopup.value = false;
         }, 3000);
         photoUploadMessage.value = t('PhotoUploadSuccessful');
+        getProfilePicture();
       })
       .catch((err) => {
         file.value = null;
@@ -187,7 +203,8 @@ export default {
       upload,
       showUploadSuccessPopup,
       photoUploadMessage,
-      dialogColor
+      dialogColor,
+      profilePhoto
     }
   },
 }
