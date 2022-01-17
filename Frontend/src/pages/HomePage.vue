@@ -5,13 +5,11 @@
       <q-icon v-if="isMobile" size="sm" name="menu" @click="toggleDrawer"/>
       {{ $t('AllowedInCampus') }} 
       {{ $t('FullyVaccinated') }}
-      <q-btn label="Change" @click="riskless = false"/>
     </q-banner>
     <q-banner v-else inline-actions class="text-white bg-red">
       <q-icon v-if="isMobile" size="sm" name="menu" @click="toggleDrawer"/>
       {{ $t('NotAllowedInCampus') }} 
       {{ $t('YouAreRisky') }}
-      <q-btn label="Change" @click="riskless = true"/>
     </q-banner>
     </div>
     <div class="q-pa-md q-mx-xs row q-gutter-lg">

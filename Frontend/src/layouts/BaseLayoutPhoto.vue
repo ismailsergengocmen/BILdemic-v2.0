@@ -18,20 +18,20 @@
           <q-avatar size="90px" class="q-mb-sm bg-white">
             <img src="../assets/profile_default.jpg" size="100px">
           </q-avatar>
-          <div class="text-weight-bold text-black">Ezgi Lena Sönmez</div>
-          <div class="text-weight-bold text-black">21802918</div>
-          <div class="text-weight-bold text-black">HES: DF72-ACA3-43</div>
+          <div class="text-weight-bold text-black"> {{ currentUser?._name }} </div>
+          <div class="text-weight-bold text-black"> {{ currentUser?._ID }} </div>
+          <div class="text-weight-bold text-black">HES: {{ currentUser?._hesObject._hesCode }}</div>
         </div>
 
         <div style="height: calc(100% - 240px); margin-top: 240px;">
           <q-list class="fixed-bottom q-mb-sm">
-            <q-item clickable v-ripple to="/settings">
+            <q-item clickable v-ripple to="/~/profile">
               <q-item-section class="q-ml-sm">
                 {{ $t('ProfileSettings') }}
               </q-item-section>
             </q-item>
 
-            <q-item clickable v-ripple to="/important">
+            <q-item clickable v-ripple to="/~/important">
               <q-item-section class="q-ml-sm">
                 {{ $t('ImportantNumbers') }}
               </q-item-section>
@@ -53,10 +53,12 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import LoginManager from '../classes/LoginManager'
 import { useRouter } from 'vue-router'
+import UserManager from '../classes/UserManager'
+import { Store } from '../store/index'
 
 export default {
   name: 'BaseLayoutPhoto',
@@ -68,8 +70,17 @@ export default {
     });
 
     const drawer = ref(!isMobile.value);
-    const lm = LoginManager.getInstance();
     const router = useRouter();
+    const lm = LoginManager.getInstance();
+    const um = UserManager.getInstance();
+
+    const currentUser = ref(null);
+
+    onBeforeMount(async () => {
+      um.getUserInfo(Store.state.settings.currentUserUID).then((val) => {
+        currentUser.value = val.val();
+      })
+    })
 
     watch(isMobile, () => {
       drawer.value = !isMobile.value;
@@ -87,7 +98,8 @@ export default {
     return {
       drawer,
       toggleDrawer,
-      logoutUser
+      logoutUser,
+      currentUser
     }
   },
 }
