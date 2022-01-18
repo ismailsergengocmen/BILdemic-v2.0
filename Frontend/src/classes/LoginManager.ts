@@ -10,6 +10,7 @@ import { equalTo, get, getDatabase, orderByChild, onValue, query, ref, set } fro
 
 import CafeteriaStaff from "./CafeteriaStaff";
 import DiagnovirTester from "./DiagnovirTester";
+import Dorm from "./Dorm";
 import HealthCenterStaff from "./HealthCenterStaff";
 import Instructor from "./Instructor";
 import SportStaff from "./SportStaff";
@@ -33,7 +34,7 @@ export default class LoginManager {
         return this.instance;
     }
 
-    public async createUser(name:string, mail:string, password:string, role:string, address:string, phoneNumber:string, hesCode:string, ID:number, resideInDorm:boolean, roomMateNames:string) {
+    public async createUser(name:string, mail:string, password:string, role:string, dormNo:string, phoneNumber:string, hesCode:string, ID:number, resideInDorm:boolean, dormRoomNo:string) {
 
         createUserWithEmailAndPassword(getAuth(), mail, password) .then(async (userCredential) => 
         {
@@ -46,32 +47,33 @@ export default class LoginManager {
             const db = getDatabase();
 
             if (role === "Student") {
-                const student = new Student(name, mail, password, role, address, phoneNumber, hesCode, ID, resideInDorm, roomMateNames);
+                const dorm = new Dorm(dormNo, dormRoomNo);
+                const student = new Student(name, mail, password, role, phoneNumber, hesCode, ID, resideInDorm, dorm);
                 student.Uid = userUID;
                 return set(ref(db, `Users/${userCredential.user.uid}`), student);
             }
             else if (role === "Instructor") {
-                const instructor = new Instructor(name, mail, password, role, address, phoneNumber, hesCode, ID, false, []);
+                const instructor = new Instructor(name, mail, password, role, phoneNumber, hesCode, ID, false, []);
                 instructor.Uid = userUID;
                 return set(ref(db, `Users/${userCredential.user.uid}`), instructor);
             }
             else if (role === "CafeteriaStaff") {
-                const cafeteriaStaff = new CafeteriaStaff(name, mail, password, role, address, phoneNumber, hesCode);
+                const cafeteriaStaff = new CafeteriaStaff(name, mail, password, role, phoneNumber, hesCode);
                 cafeteriaStaff.Uid = userUID;
                 return set(ref(db, `Users/${userCredential.user.uid}`), cafeteriaStaff);
             }
             else if (role === "HealthCenterStaff") {
-                const healthCenterStaff = new HealthCenterStaff(name, mail, password, role, address, phoneNumber, hesCode);
+                const healthCenterStaff = new HealthCenterStaff(name, mail, password, role, phoneNumber, hesCode);
                 healthCenterStaff.Uid = userUID;
                 return set(ref(db, `Users/${userCredential.user.uid}`), healthCenterStaff);
             }
             else if (role === "DiagnovirTester") {
-                const diagnovirTester = new DiagnovirTester(name, mail, password, role, address, phoneNumber, hesCode);
+                const diagnovirTester = new DiagnovirTester(name, mail, password, role, phoneNumber, hesCode);
                 diagnovirTester.Uid = userUID;
                 return set(ref(db, `Users/${userCredential.user.uid}`), diagnovirTester);
             }
             else if (role === "SportsCenterStaff") {
-                const sportStaff = new SportStaff(name, mail, password, role, address, phoneNumber, hesCode);
+                const sportStaff = new SportStaff(name, mail, password, role, phoneNumber, hesCode);
                 sportStaff.Uid = userUID;
                 return set(ref(db, `Users/${userCredential.user.uid}`), sportStaff);
             }

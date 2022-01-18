@@ -1,157 +1,171 @@
 <template>
 <div class="full-width column items-center">
   <q-dialog v-model="showRegisterOkMessage" seamless position="top">
-      <q-card style="width: 300px" class="bg-secondary">
-        <q-card-section>
-          <q-banner dense inline-actions class="text-white bg-secondary" >
-            <div class="row justify-center">
+    <q-card style="width: 300px" class="bg-secondary">
+      <q-card-section>
+        <q-banner dense inline-actions class="text-white bg-secondary" >
+          <div class="row justify-center">
             {{ $t("RegisterDone") }}
-            </div>
-          </q-banner>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+          </div>
+        </q-banner>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 
-    <q-dialog v-model="showEmptySlotsError" seamless position="top">
-      <q-card style="width: 300px" class="bg-negative">
-        <q-card-section>
-          <q-banner dense inline-actions class="text-white bg-negative" >
-            <div class="row justify-center">
+  <q-dialog v-model="showEmptySlotsError" seamless position="top">
+    <q-card style="width: 300px" class="bg-negative">
+      <q-card-section>
+        <q-banner dense inline-actions class="text-white bg-negative" >
+          <div class="row justify-center">
             {{ $t("EmptySlotsError") }}
-            </div>
-          </q-banner>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
+          </div>
+        </q-banner>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 
   <q-form :class="`${formStyling} greedy`" :style="isMobile ? 'width: 90%' : 'width: 60%'">
     <div class="column q-gutter-y-sm">
-    <div class="row">
-      <q-input 
-        :label="$t('FullName')" 
-        filled
-        square
-        v-model="name"
-        class="col-8 q-mr-md"
-        color="secondary"
-        :disable="loading"
-        :rules="[ val => val && val.length > 0]"
-      />
+      <div class="row q-gutter-x-md">
+        <q-input 
+          :label="$t('FullName')" 
+          filled
+          square
+          v-model="name"
+          class="col-8"
+          color="secondary"
+          :disable="loading"
+          :rules="[ val => !!val]"
+        />
 
-      <q-select
-        :label="$t('Role')" 
-        filled
-        square
-        v-model="role"
-        class="col"
-        color="secondary"
-        :options="roleOptions"
-        :disable="loading"
-      />
-    </div>
+        <q-select
+          :label="$t('Role')" 
+          filled
+          square
+          v-model="role"
+          class="col"
+          color="secondary"
+          :options="roleOptions"
+          :disable="loading"
+          :rules="[ val => !!val]"
+        />
+      </div>
 
-    <!-- - These two is rendered only in small screens TODO -
-    <q-input 
-      v-if="isMobile"
-      :label="$t('FullName')" 
-      filled
-      square
-      v-model="name"
-      class="col"
-      color="secondary"
-      :disable="loading"
-      :rules="[ val => val && val.length > 0]"
-    />
+      <div class="row q-gutter-x-md">
+        <q-input 
+          :label="$t('Email')" 
+          class="col"
+          filled
+          square
+          type="email"
+          v-model="mail"
+          color="secondary"
+          :disable="loading"
+          lazy-rules
+          :rules="[emailRuleValidity, emailRuleSchool]"
+        />
 
-    <q-select
-      v-if="isMobile"
-      :label="$t('Role')"
-      filled
-      square
-      v-model="role"
-      class="col q-mb-md q-mt-xs"
-      color="secondary"
-      :options="roleOptions"
-      :disable="loading"
-    /> -->
+        <q-input 
+          v-if="role === 'Student' || role === 'Instructor'"
+          :label="$t('ID')" 
+          class="col-3"
+          filled
+          square
+          v-model="id"
+          color="secondary"
+          :disable="loading"
+          :rules="[ val => !!val]"
+        />
+      </div>
 
-    <q-input 
-      :label="$t('ID')" 
-      filled
-      square
-      v-model="id"
-      color="secondary"
-      :disable="loading"
-      :rules="[ val => val && val.length > 0]"
-    />
+      <div class="row q-gutter-x-md">
+        <q-input 
+          :label="$t('Phone')" 
+          class="col"
+          filled
+          square
+          v-model="phone"
+          color="secondary"
+          :disable="loading"
+          mask="(###) ### - ####"
+          unmasked-value
+          fill-mask
+          lazy-rules
+          :rules="[ val => !!val && val.length == 10]"
+        />
 
-    <q-input 
-      :label="$t('Email')" 
-      filled
-      square
-      type="email"
-      v-model="mail"
-      color="secondary"
-      :disable="loading"
-      lazy-rules
-      :rules="[emailRuleValidity, emailRuleSchool]"
-    />
+        <q-input 
+          :label="$t('HESCode')" 
+          class="col"
+          filled
+          square
+          v-model="hes"
+          color="secondary"
+          :disable="loading"
+          mask="XXXX-XXXX-XX"
+          unmasked-value
+          fill-mask
+          lazy-rules
+          :rules="[ val => val && val.length == 10 || $t('HesCodeDigitError')]"
+        />
+      </div>
 
-    <q-input 
-      :label="$t('HESCode')" 
-      filled
-      square
-      v-model="hes"
-      color="secondary"
-      :disable="loading"
-      mask="####-####-##"
-      lazy-rules
-      :rules="[ val => val && val.length == 12 || $t('HesCodeDigitError')]"
-    />
+      <div class="row q-gutter-x-md" v-if="role == 'Student'">
+        <q-checkbox
+          class="bg-grey-2 text-grey-8 q-pa-sm q-mb-lg text-body2 col-5"
+          :label="$t('ResideInDorm')"
+          color="secondary"
+          keep-color
+          v-model="resideInDorm"
+          :disable="loading"
+        />
 
-    <div class="row" v-if="role == 'Student'">
-      <q-checkbox
-        class="bg-grey-2 text-grey-8 q-pa-sm q-mr-md q-mb-lg text-body2 col-8"
-        :label="$t('ResideInDorm')"
-        color="secondary"
-        keep-color
-        v-model="resideInDorm"
-        :disable="loading"
-      />
+        <q-select
+          :disable="!resideInDorm || loading"
+          :label="$t('DormNumber')" 
+          filled
+          square
+          v-model="dorm"
+          class="col"
+          color="secondary"
+          :options="dormOptions" 
+          :rules="[ val => !!val]"
+        />
 
-      <q-select
-        :disable="!resideInDorm || loading"
-        :label="$t('DormNumber')" 
-        filled
-        square
-        v-model="dorm"
-        class="col"
-        color="secondary"
-        :options="dormOptions" 
-      />
-    </div>
+        <q-input 
+          :disable="!resideInDorm || loading"
+          :label="$t('DormRoomNo')" 
+          filled
+          square
+          v-model="dormRoomNo"
+          class="col"
+          color="secondary"
+          :rules="[ val => !!val]"
+        />
+      </div>
     
-    <q-input
-      :label="$t('Password')" 
-      filled
-      square
-      :type="show ? 'text' : 'password'"
-      color="secondary"
-      v-model="password"
-      :disable="loading"
-      lazy-rules
-      :rules="[ val => val && val.length >= 8 || $t('ShortPasswordError')]"
-    >
-      <template v-slot:append>
-        <q-icon
-          :name="show ? 'visibility' : 'visibility_off'"
-          class="cursor-pointer"
-          @click="show = !show"
-          >
-        </q-icon>
-      </template>
-    </q-input>
+      <q-input
+        :label="$t('Password')" 
+        filled
+        square
+        :type="show ? 'text' : 'password'"
+        color="secondary"
+        v-model="password"
+        :disable="loading"
+        lazy-rules
+        :rules="[ val => val && val.length >= 8 || $t('ShortPasswordError')]"
+      >
+        <template v-slot:append>
+          <q-icon
+            :name="show ? 'visibility' : 'visibility_off'"
+            class="cursor-pointer"
+            @click="show = !show"
+            >
+          </q-icon>
+        </template>
+      </q-input>
     </div>
+
     <q-btn 
       :label="$t('CreateAccount')" 
       color="secondary" 
@@ -159,9 +173,9 @@
       align="center"
       class="q-mt-sm"
       :style="isMobile ? 'width: 50%' : 'width: 30%'"
-      @click.prevent="register(name, mail, password, role, '', '', hes, id, resideInDorm, '')"
+      @click.prevent="register(name, mail, password, role, dorm, phone, hes, id, resideInDorm, dormRoomNo)"
       :disable="loading"
-      />
+    />
   </q-form>
 </div>
 </template>
@@ -181,14 +195,16 @@ export default {
     const router = useRouter();
     const { t } = useI18n({})
 
-    const name = ref('');
-    const role = ref('');
-    const id = ref('');
-    const mail = ref('');
-    const hes = ref('');
+    const name = ref(null);
+    const role = ref(null);
+    const id = ref(null);
+    const mail = ref(null);
+    const phone = ref(null);
+    const hes = ref(null);
     const resideInDorm = ref(false);
     const dorm = ref(null);
-    const password = ref('');
+    const dormRoomNo = ref(null);
+    const password = ref(null);
     const show = ref(false);
 
     const showRegisterOkMessage = ref(false);
@@ -230,9 +246,9 @@ export default {
       return props.isMobile ? "q-gutter-md" : "q-pa-md q-gutter-md";
     })
 
-    const register = async (name, mail, password, role, address, phone, hes, id, resideInDorm, roomMateNames) => {
-      if (inputValidity(name, mail, password, role, phone, hes, id)) {
-        lm.createUser(name, mail, password, role, address, phone, hes, id, resideInDorm, roomMateNames).then(() => {
+    const register = async (name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo) => {
+      if (inputValidity(name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo)) {
+        lm.createUser(name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo).then(() => {
         showRegisterOkMessage.value = true;
         loading.value = true;
         setTimeout(() => {
@@ -253,16 +269,31 @@ export default {
       
     }
 
-    const inputValidity = (name, mail, password, role, phone, hes, id) => {
-      if (password.length < 8) {
+    const inputValidity = (name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo) => {
+      if (!name || !mail || !password || !role || !phone || !hes) {
         return false;
       }
-      else if (name === '' || mail === '' || role === '' || phone === '', hes === '', id === null) {
+      else if ((role === "Student" && id === null) || (role === "Instructor" && id === null)) {
         return false;
+      }
+      else if (password.length < 8 || hes.length != 10 || phone.length != 10) {
+        return false;
+      }
+      else if (resideInDorm && (dormNo === null || dormRoomNo === null || dormRoomNo === '')) {
+        return false;
+      }
+      else if (role === "Student") {
+        return mail.includes('\@ug.bilkent.edu.tr');
+      }
+      else if (role === "Instructor") {
+        return (mail.includes('\@fen.bilkent.edu.tr') 
+                || mail.includes('\@cs.bilkent.edu.tr')
+                || mail.includes('\@bilkent.edu.tr') 
+                || mail.includes('\@ee.bilkent.edu.tr'));
       }
       else {
-        return true;
-      }
+        return mail.includes('\@bilkent.edu.tr');
+      } 
     }
     
     return {
@@ -272,11 +303,13 @@ export default {
       id,
       mail,
       hes,
+      phone,
       password,
       show,
       resideInDorm,
       roleOptions,
       dorm,
+      dormRoomNo,
       dormOptions,
       emailRuleSchool,
       emailRuleValidity,

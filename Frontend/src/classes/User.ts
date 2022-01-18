@@ -14,7 +14,6 @@ export default abstract class User {
     private _mail: string;
     private _password: string;
     private _role: string;
-    private _address: string;
     private _profilePic: string;
     private _phoneNum: string;
     private _campusStatus: CampusStatus;
@@ -25,14 +24,13 @@ export default abstract class User {
     
 
     //Constructor
-    protected constructor(name:string, mail:string, password:string, role:string, address:string, phoneNum:string, hesCode:string ){
+    protected constructor(name:string, mail:string, password:string, role:string, phoneNum:string, hesCode:string ){
         this._name = name;
         this._mail = mail;
         this._password = password;
         this._role = role;
-        this._address = address;
         this._phoneNum = phoneNum;
-        this._profilePic = "";
+        this._profilePic = "https://firebasestorage.googleapis.com/v0/b/bildemic-718ce.appspot.com/o/Defaults%2FProfilePhoto.jpg?alt=media&token=68b06703-7f9b-4762-8a0c-c052f9d5e385";
         this._vaccineCard = null;
         this._Uid = "";
         this._orders = [];
@@ -74,13 +72,6 @@ export default abstract class User {
         this._role = role;
     }
 
-    public get address(): string {
-        return this._address;
-    }
-    public set address(address: string) {
-        this._address = address;
-    }
-
     public get profilePic(): string {
         return this._profilePic;
     }
@@ -94,21 +85,21 @@ export default abstract class User {
     public set phoneNum(phoneNum: string) {
         this._phoneNum = phoneNum;
     }
- 
+
     public get campusStatus(): CampusStatus {
         return this._campusStatus;
     }
     public set campusStatus(campusStatus: CampusStatus) {
         this._campusStatus = campusStatus;
     }
- 
+
     public get hesObject(): HesObject {
         return this._hesObject;
     }
     public set hesObject(hesObject: HesObject) {
         this._hesObject = hesObject;
     }
- 
+
     public get vaccineCard(): VaccineCard | null {
         return this._vaccineCard;
     }

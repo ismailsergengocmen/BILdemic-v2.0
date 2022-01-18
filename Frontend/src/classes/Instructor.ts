@@ -12,8 +12,8 @@ export default class Instructor extends User {
   private _lectures: Lecture[] | null;
 
   //Constructor
-  public constructor(name: string, mail: string, password: string, role: string, address: string, phoneNumber: string, hesCode: string, ID: number, sportPunishStatus: boolean, lectures: Lecture[] | null) {
-    super(name,mail,password,role,address,phoneNumber,hesCode);
+  public constructor(name: string, mail: string, password: string, role: string, phoneNumber: string, hesCode: string, ID: number, sportPunishStatus: boolean, lectures: Lecture[] | null) {
+    super(name,mail,password,role,phoneNumber,hesCode);
         this._ID = ID;
         this._sportPunishStatus = sportPunishStatus;
         this._lectures = lectures;
