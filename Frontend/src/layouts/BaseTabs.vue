@@ -14,47 +14,47 @@
 
   <q-list class="q-py-none">
     <div>
-      <q-item v-if="roleCheck('courses')" clickable v-ripple active-class="bg-teal-2" :active="listItemActiveStatus('course')">
-        <q-item-section class="q-ml-sm">
-          <router-link :to="calculateRoute('courses')">
+      <router-link :to="calculateRoute('courses')">
+        <q-item v-if="roleCheck('courses')" clickable v-ripple active-class="bg-teal-2 text-black" :active="listItemActiveStatus('course')">
+          <q-item-section class="q-ml-sm">
             {{ $t('Courses') }}
-          </router-link>
-        </q-item-section>
-      </q-item>
+          </q-item-section>
+        </q-item>
+      </router-link>
   
-      <q-item v-if="roleCheck('diagnovir')" clickable v-ripple active-class="bg-teal-2" :active="listItemActiveStatus('diagnovir')">
-        <q-item-section class="q-ml-sm">
-          <router-link :to="calculateRoute('diagnovir')">
+      <router-link :to="calculateRoute('diagnovir')">
+        <q-item v-if="roleCheck('diagnovir')" clickable v-ripple active-class="bg-teal-2 text-black" :active="listItemActiveStatus('diagnovir')">
+          <q-item-section class="q-ml-sm">
             {{ $t('DiagnovirCenter') }}
-          </router-link>
-        </q-item-section>
-      </q-item>
+          </q-item-section>
+        </q-item>
+      </router-link>
   
-      <q-item v-if="roleCheck('health')" clickable v-ripple active-class="bg-teal-2" :active="listItemActiveStatus('health')">
-        <q-item-section class="q-ml-sm">
-          <router-link :to="calculateRoute('health')">
+      <router-link :to="calculateRoute('health')">
+        <q-item v-if="roleCheck('health')" clickable v-ripple active-class="bg-teal-2 text-black" :active="listItemActiveStatus('health')">
+          <q-item-section class="q-ml-sm">
             {{ $t('HealthCenter') }}
-          </router-link>
-        </q-item-section>
-      </q-item>
+          </q-item-section>
+        </q-item>
+      </router-link>
   
-      <q-item v-if="roleCheck('sports')" clickable v-ripple active-class="bg-teal-2" :active="listItemActiveStatus('sport')">
-        <q-item-section class="q-ml-sm">
-          <router-link :to="calculateRoute('sports')">
+      <router-link :to="calculateRoute('sports')">
+        <q-item v-if="roleCheck('sports')" clickable v-ripple active-class="bg-teal-2 text-black" :active="listItemActiveStatus('sport')">
+          <q-item-section class="q-ml-sm">
             {{ $t('SportsCenter') }}
-          </router-link>
-        </q-item-section>
-      </q-item>
+          </q-item-section>
+        </q-item>
+      </router-link>
   
-      <q-item v-if="roleCheck('cafeteria')" clickable v-ripple active-class="bg-teal-2" :active="listItemActiveStatus('cafeteria')">
-        <q-item-section class="q-ml-sm">
-          <router-link  :to="calculateRoute('cafeteria')">
-            {{ $t('Cafeteria') }}
-          </router-link>
-        </q-item-section>
-      </q-item>
+      <router-link :to="calculateRoute('cafeteria')">
+        <q-item v-if="roleCheck('cafeteria')" clickable v-ripple active-class="bg-teal-2 text-black" :active="listItemActiveStatus('cafeteria')">
+          <q-item-section class="q-ml-sm">
+              {{ $t('Cafeteria') }}
+          </q-item-section>
+        </q-item>
+      </router-link>
   
-      <q-item clickable v-ripple to="/~/weekly" active-class="bg-teal-2">
+      <q-item clickable v-ripple to="/~/weekly" active-class="bg-teal-2 text-black">
         <q-item-section class="q-ml-sm">
           {{ $t('WeeklyReport') }}
         </q-item-section>
