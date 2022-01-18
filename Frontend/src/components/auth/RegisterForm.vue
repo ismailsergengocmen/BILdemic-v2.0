@@ -35,7 +35,7 @@
           class="col-8"
           color="secondary"
           :disable="loading"
-          :rules="[ val => val && val.length > 0]"
+          :rules="[ val => !!val]"
         />
 
         <q-select
@@ -54,7 +54,7 @@
       <div class="row q-gutter-x-md">
         <q-input 
           :label="$t('Email')" 
-          class="col-8"
+          class="col"
           filled
           square
           type="email"
@@ -66,14 +66,15 @@
         />
 
         <q-input 
+          v-if="role === 'Student' || role === 'Instructor'"
           :label="$t('ID')" 
-          class="col"
+          class="col-3"
           filled
           square
           v-model="id"
           color="secondary"
           :disable="loading"
-          :rules="[ val => val && val.length > 0]"
+          :rules="[ val => !!val]"
         />
       </div>
 
@@ -269,33 +270,28 @@ export default {
     }
 
     const inputValidity = (name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo) => {
-      if (name === null || mail === null || password === null 
-            || role === null || phone === null || hes === null 
-            || id === null) {
-              console.log(1);
+      if (!name || !mail || !password || !role || !phone || !hes) {
+        return false;
+      }
+      else if ((role === "Student" && id === null) || (role === "Instructor" && id === null)) {
         return false;
       }
       else if (password.length < 8 || hes.length != 10 || phone.length != 10) {
-        console.log(2);
         return false;
       }
-      else if (resideInDorm && (dormNo === null || dormRoomNo === null)) {
-        console.log(3);
+      else if (resideInDorm && (dormNo === null || dormRoomNo === null || dormRoomNo === '')) {
         return false;
       }
-      else if (role == "Student") {
-        console.log(4);
+      else if (role === "Student") {
         return mail.includes('\@ug.bilkent.edu.tr');
       }
-      else if (role == "Instructor") {
-        console.log(5);
+      else if (role === "Instructor") {
         return (mail.includes('\@fen.bilkent.edu.tr') 
                 || mail.includes('\@cs.bilkent.edu.tr')
                 || mail.includes('\@bilkent.edu.tr') 
                 || mail.includes('\@ee.bilkent.edu.tr'));
       }
       else {
-        console.log(6);
         return mail.includes('\@bilkent.edu.tr');
       } 
     }
