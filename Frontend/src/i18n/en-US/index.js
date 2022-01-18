@@ -176,5 +176,6 @@ export default {
   ProfileUpdateSuccessful: 'Your profile information is updated successfully.',
   UpdateProfilePicture: 'Update Your Profile Photo',
   SelectNewProfilePhoto: 'Click to select new profile photo',
-  PhotoUploadSuccessful: 'Your profile photo successfully updated.'
+  PhotoUploadSuccessful: 'Your profile photo successfully updated.',
+  DormRoomNo: 'Dorm room no'
 }

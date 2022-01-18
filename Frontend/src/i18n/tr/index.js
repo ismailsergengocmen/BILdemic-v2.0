@@ -176,5 +176,6 @@ export default {
   ProfileUpdateSuccessful: 'Profil bilgileriniz başarılı bir şekilde güncellendi.',
   UpdateProfilePicture: 'Profil Resmini Güncelle',
   SelectNewProfilePhoto: 'Yeni profil resmi seçmek için tıklayın',
-  PhotoUploadSuccessful: 'Profil resmi başarıyla güncellendi.'
+  PhotoUploadSuccessful: 'Profil resmi başarıyla güncellendi.',
+  DormRoomNo: 'Yurt oda numarası'
 }
