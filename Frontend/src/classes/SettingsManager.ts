@@ -1,6 +1,7 @@
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword  } from "firebase/auth";
 import { getDatabase, ref, set } from "firebase/database";
 import { getStorage, ref as refStorage, uploadBytes, getDownloadURL } from "firebase/storage";
+import Dorm from "./Dorm";
 
 export default class SettingsManager {
 
@@ -26,12 +27,13 @@ export default class SettingsManager {
         await set(ref(db, `Users/${Uid}/_phoneNum`), phoneNum); 
     }
 
-    public async changeAddress(address:string){
+    public async changeAddress(dormNo:string, dormRoomNo:string){
         const auth = getAuth();
         const Uid = auth.currentUser?.uid;
         const db = getDatabase();
 
-        await set(ref(db, `Users/${Uid}/_address`), address); 
+        const dorm = new Dorm(dormNo, dormRoomNo);
+        await set(ref(db, `Users/${Uid}/_dorm`), dorm); 
     }
 
     public async changeHES(hesCode:string){

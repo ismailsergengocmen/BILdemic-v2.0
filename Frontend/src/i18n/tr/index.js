@@ -12,7 +12,7 @@ export default {
   ID: 'ID',
   HESCode: 'HES Kodu',
   ResideInDorm: 'Bilkent yurtlarında mı kalıyorsunuz?',
-  DormNumber: 'Yurt Numarası',
+  DormNumber: 'Yurt numarası',
   CreateAccount: 'Hesap oluştur',
   Student: 'Öğrenci',
   Instructor: 'Öğretmen',

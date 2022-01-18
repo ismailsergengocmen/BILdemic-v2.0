@@ -59,15 +59,29 @@
         fill-mask
       />
 
-      <q-input 
-        v-if="role === 'Student'"
-        class="col" 
-        outlined 
-        dense 
-        :label="$t('Address')"
-        v-model="address"
-        color="secondary"
-      />
+      <div class="row q-gutter-x-md">
+        <q-select
+          v-if="role === 'Student'"
+          class="col" 
+          outlined 
+          dense
+          :options="dormOptions" 
+          :label="$t('DormNumber')"
+          v-model="dormNo"
+          color="secondary"
+        />
+
+        <q-input 
+          v-if="role === 'Student'"
+          class="col" 
+          outlined 
+          dense 
+          :label="$t('DormRoomNo')"
+          v-model.number="dormRoomNo"
+          type="number"
+          color="secondary"
+        />
+      </div> 
 
       <q-input 
         class="col q-pb-sm" 
@@ -189,7 +203,8 @@ export default {
     const id = ref(null);
     const mail = ref(null);
     const phone = ref(null);
-    const address = ref(null);
+    const dormNo = ref(null);
+    const dormRoomNo = ref(null);
     const hesCode = ref(null);
     const role = ref(null);
 
@@ -209,7 +224,8 @@ export default {
         id.value = currentUser.value?._ID;
         mail.value = currentUser.value?._mail;
         phone.value = currentUser.value?._phoneNum;
-        address.value = currentUser.value?._address;
+        dormNo.value = currentUser.value?._dorm?._dormNo;
+        dormRoomNo.value = currentUser.value?._dorm?._dormRoomNo;
         hesCode.value = currentUser.value?._hesObject._hesCode;
         role.value = currentUser.value?._role;
       })
@@ -300,7 +316,8 @@ export default {
 
     const save = async () => {  
       const currentPhoneNum = currentUser.value?._phoneNum;
-      const currentAddress = currentUser.value?._address;
+      const currentDormNo = currentUser.value?._dorm?._dormNo;
+      const currentDormRoomNo = currentUser.value?._dorm?._dormRoomNo;
       const currentHESCode = currentUser.value?._hesObject._hesCode;
 
       message.value = 5;
@@ -308,8 +325,8 @@ export default {
       if (phone.value !== currentPhoneNum) {
         await sm.changePhone(phone.value);
       }
-      if (address.value !== currentAddress) {
-        await sm.changeAddress(address.value);
+      if (dormNo.value !== currentDormNo || dormRoomNo.value !== currentDormRoomNo) {
+        await sm.changeAddress(dormNo.value, dormRoomNo.value);
       }
       if (hesCode.value !== currentHESCode) {
         if (hesCode.value.length !== 10) {
@@ -326,12 +343,18 @@ export default {
       }, 3000);
     }
 
+    const dormOptions = [
+      50, 51, 52, 54, 55, 60, 61, 62, 63, 64, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 81, 82, 90, 91, 92, 93
+    ];
+
     return {
       currentUser,
       name,
       id,
       phone,
-      address,
+      dormNo,
+      dormRoomNo,
+      dormOptions,
       hesCode,
       mail,
       role,

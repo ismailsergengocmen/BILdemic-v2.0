@@ -12,7 +12,7 @@ export default {
   ID: 'ID',
   HESCode: 'HES Code',
   ResideInDorm: 'Do you reside in Bilkent Dormitories?',
-  DormNumber: 'Dorm Number',
+  DormNumber: 'Dorm number',
   CreateAccount: 'Create Account',
   Student: 'Student',
   Instructor: 'Instructor',
