@@ -31,8 +31,20 @@
 
         <q-card-actions class="justify-between">
           <q-btn flat :label="$t('Cancel')" color="secondary" v-close-popup />
-          <q-btn flat :label="$t('Confirm')" color="secondary" />
+          <q-btn flat :label="$t('Confirm')" color="secondary" @click="callAmbulance"/>
         </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="ambulanceCallDone" seamless position="top">
+      <q-card style="width: 300px" class="bg-positive">
+        <q-card-section>
+          <q-banner dense inline-actions class="text-white bg-positive" >
+            <div class="row justify-center">
+            {{ $t('AmbulaneCallDone')}}
+            </div>
+          </q-banner>
+        </q-card-section>
       </q-card>
     </q-dialog>
 
@@ -44,6 +56,8 @@ import { computed, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import MyReservations from '../../components/reservation/MyReservations.vue'
 import HealthForm from '../../components/health/HealthForm.vue'
+import HealthManager from '../../classes/HealthManager'
+import { Store } from '../../store/index'
 
 export default {
   name: "HealthCenterPage",
@@ -81,13 +95,13 @@ export default {
 
   setup(props, ctx) {
     const $q = useQuasar();
+    const hm = HealthManager.getInstance();
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
     });
 
     const open = ref(!isMobile.value);
-
     const show = ref(false);
 
     watch(isMobile, () => {
@@ -101,11 +115,26 @@ export default {
       ctx.emit('toggleDrawer');
     }
 
+    const ambulanceCallDone = ref(false);
+
+    const callAmbulance = () => {
+      const UID = Store.state.settings.currentUserUID;
+      hm.makeAmbulanceCall(UID).then(() => {
+        show.value = false;
+        ambulanceCallDone.value = true;
+        setTimeout(() => {
+          ambulanceCallDone.value = false;
+        }, 3000);
+      });
+    }
+
     return {
       toggleDrawer,
       isMobile,
       hasReservation,
-      show
+      show,
+      callAmbulance,
+      ambulanceCallDone
     }
   },
 }

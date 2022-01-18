@@ -7,17 +7,37 @@
         {{ i }}
       </div>
     </div>
+
     <q-btn 
-      :label="buttonText" 
-      class="q-mr-md" 
-      color="secondary" 
-      @click="button1Clicked" />
+      round
+      class="q-mr-sm"
+      :icon="firstIcon"
+      :color="firstIconColor"
+      size="lg"
+      flat
+      dense
+      @click="firstClicked"
+    >
+      <q-tooltip self="center middle" :class="`bg-${firstIconColor}`">
+        {{ firstIconTooltip }}
+      </q-tooltip>
+    </q-btn>
+
     <q-btn 
-      v-if="hasSecondButton" 
-      :label="secondButtonText" 
-      class="q-mr-md" 
-      color="secondary" 
-      @click="button2Clicked"/>
+      v-if="hasSecondIcon" 
+      round
+      class="q-mr-sm" 
+      :icon="secondIcon"
+      :color="secondIconColor"
+      size="lg"
+      flat
+      dense
+      @click="secondClicked"
+    >
+      <q-tooltip self="center middle" :class="`bg-${secondIconColor}`">
+        {{ secondIconTooltip }}
+      </q-tooltip>
+    </q-btn>
   </div>
 </template>
 
@@ -25,23 +45,27 @@
 export default {
   name: "GenericUserCard",
   props: {
-    buttonText: String,
-    cardInfo: Object,
-    hasSecondButton: Boolean,
-    secondButtonText: String
+    firstIcon: String,
+    firstIconColor: String,
+    firstIconTooltip: String,
+    hasSecondIcon: Boolean,
+    secondIcon: String,
+    secondIconColor: String,
+    secondIconTooltip: String,
+    cardInfo: Object
   },
   setup(props, ctx) {
-    const button1Clicked = () => {
-      ctx.emit('button1Clicked', props.cardInfo)
+    const firstClicked = () => {
+      ctx.emit('firstClicked', props.cardInfo)
     }
 
-    const button2Clicked = () => {
-      ctx.emit('button2Clicked', props.cardInfo)
+    const secondClicked = () => {
+      ctx.emit('secondClicked', props.cardInfo)
     }
 
     return {
-      button1Clicked,
-      button2Clicked
+      firstClicked,
+      secondClicked
     }
   },
 }

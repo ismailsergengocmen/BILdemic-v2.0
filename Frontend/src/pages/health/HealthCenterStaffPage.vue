@@ -2,6 +2,9 @@
   <div>
     <health-center-staff-tabs 
       :cardInfos="cardInfos"
+      :emergencyInfos="emergencies"
+      :ambulanceFormCount="ambulanceFormCount"
+      @dismiss="dismiss"
     />
 
     <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="isMobile">
@@ -17,9 +20,11 @@
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import HealthCenterStaffTabs from '../../components/health/HealthCenterStaffTabs.vue'
+import HealthManager from '../../classes/HealthManager'
+import UserManager from '../../classes/UserManager'
 
 export default {
   name: "HealthCenterPage",
@@ -28,6 +33,8 @@ export default {
   },
   setup(props, ctx) {
     const $q = useQuasar();
+    const hm = HealthManager.getInstance();
+    const um = UserManager.getInstance();
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -91,11 +98,69 @@ export default {
 
     const fabPos = ref([ 18, 18 ]);
 
+    const ambulanceForms = ref(null);
+    const ambulanceFormCount = computed(() => {
+      if (!ambulanceForms.value) {
+        return 0;
+      }
+      return Object.keys(ambulanceForms.value)?.length;
+    });
+
+    const emergencies = ref([]);
+
+    const fetchAmbulanceForms = async () => {
+      hm.getAllAmbulanceForms().then((val) => {
+        emergencies.value = [];
+        ambulanceForms.value = val.val();
+        
+        const forLoop = async _ => {
+          for (let key in ambulanceForms.value) {
+            const UID = ambulanceForms.value[key]?._ownerUID;
+            const owner = (await um.getUserInfo(UID)).val();
+
+            const emergency = {
+              url: owner._profilePic,
+              data: [
+                owner._name, 
+                formatPhoneNumber(ambulanceForms.value[key]._phoneNum),
+                formatTime(ambulanceForms.value[key]._time, ambulanceForms.value[key]._date)
+              ],
+              uniqueID: ambulanceForms.value[key]._OID
+            }
+
+            emergencies.value.push(emergency);
+          }
+        }
+
+        forLoop();
+      })
+    }
+
+    onBeforeMount(async () => {
+      await fetchAmbulanceForms();
+    })
+
+    const formatPhoneNumber = (phone) => {
+      return '(' + phone.substring(0, 3) + ') ' + phone.substring(3, 6) + " - " + phone.substring(6);
+    }
+
+    const formatTime = (time, date) => {
+      return date + " - " + time.substring(0, 5);
+    }
+
+    const dismiss = async (OID) => {
+      await hm.dismissAmbulanceForm(OID);
+      await fetchAmbulanceForms();
+    }
+
     return {
       toggleDrawer,
       isMobile,
       cardInfos,
-      fabPos
+      fabPos,
+      ambulanceFormCount,
+      emergencies,
+      dismiss
     }
   },
 }

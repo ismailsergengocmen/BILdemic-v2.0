@@ -13,7 +13,7 @@
         <q-tab name="newHealthForms" :label="$t('NewHealthForms')" />
         <q-tab name="ongoingChats" :label="$t('OngoingChats')" />
         <q-tab name="emergency" :label="$t('Emergency')">
-          <q-badge floating rounded color="red" :label="emergencyCount" />
+          <q-badge floating rounded color="red" :label="ambulanceFormCount" />
         </q-tab>
       </q-tabs>
     </q-header>
@@ -42,7 +42,9 @@
                     v-for="info in cardInfos" 
                     :key="info"  
                     :cardInfo="info"
-                    :buttonText="$t('SeeHealthForm')"
+                    firstIcon="mdi-file-document"
+                    firstIconColor="indigo-6"
+                    :firstIconTooltip="$t('SeeHealthForm')"
                     class="text-black"
                     @button1Clicked="showForm"
                   />
@@ -72,9 +74,13 @@
                     v-for="info in cardInfos" 
                     :key="info"  
                     :cardInfo="info"
-                    :buttonText="$t('SeeChat')"
-                    :hasSecondButton="true"
-                    :secondButtonText="$t('SeeHealthForm')"
+                    firstIcon="mdi-forum-outline"
+                    :firstIconTooltip="$t('SeeChat')"
+                    firstIconColor="positive"
+                    :hasSecondIcon="true"
+                    secondIcon="mdi-file-document"
+                    secondIconColor="indigo-6"
+                    :secondIconTooltip="$t('SeeHealthForm')"
                     class="text-black"
                     @button2Clicked="showForm"
                   />
@@ -88,11 +94,13 @@
               <q-scroll-area class="full-width q-mt-md" style="height: 550px" >
                 <div class="column q-gutter-y-md full-width items-center">
                   <generic-user-card 
-                    v-for="info in cardInfos" 
+                    v-for="info in emergencyInfos" 
                     :key="info"  
                     :cardInfo="info"
-                    :buttonText="$t('Dismiss')"
-                    class="text-black"
+                    firstIcon="mdi-close-circle-outline"
+                    firstIconColor="negative"
+                    :firstIconTooltip="$t('Dismiss')"
+                    @firstClicked="dismiss"
                   />
                 </div>
               </q-scroll-area>
@@ -120,6 +128,7 @@
 import { ref } from 'vue'
 import GenericUserCard from '../generic/GenericUserCard.vue'
 import HealthFormStaffView from '../health/HealthFormStaffView.vue'
+import HealthManager from '../../classes/HealthManager'
 
 export default {
   name: 'HealthCenterStaffTabs',
@@ -127,17 +136,18 @@ export default {
     GenericUserCard,
     HealthFormStaffView
   },
-  props: {
-    cardInfos: Array
-  },
+  props: ['cardInfos', 'emergencyInfos', 'ambulanceFormCount'],
 
-  setup() {
+  setup(props, ctx) {
     const tab = ref('newHealthForms');
     const searchForm = ref(null);
     const searchChat = ref(null);
-    const emergencyCount = ref(10);
 
     const showHealthForm = ref(false);
+
+    const dismiss = (data) => {
+      ctx.emit('dismiss', data.uniqueID);
+    }
 
     const showForm = () => {
       // YOU NEED TO GET USER DATA FROM THE CARD WHEN EMITTING
@@ -148,9 +158,9 @@ export default {
       tab,
       searchForm,
       searchChat,
-      emergencyCount,
       showHealthForm,
-      showForm
+      showForm,
+      dismiss
     } 
   },
 }

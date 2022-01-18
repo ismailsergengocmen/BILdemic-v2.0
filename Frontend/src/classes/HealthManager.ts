@@ -1,5 +1,7 @@
 import HealthForm from "./HealthForm";
 import User from "./User";
+import { ref, get, getDatabase, set, remove } from 'firebase/database';
+import AmbulanceForm from "./AmbulanceForm";
 
 export default class HealthManager {
     private static instance: HealthManager | null = null;
@@ -20,9 +22,29 @@ export default class HealthManager {
         return true;
     }
 
-    public ambulanceCall(phoneNumber: string): boolean {
-        //TO DO
-        return true;
+    public async makeAmbulanceCall(UID: string) {
+        const db = getDatabase();
+        const user = (await get(ref(db, `Users/${UID}`))).val();
+
+        const place = user?._dorm?._dormNo + " - " + user?._dorm?._dormRoomNo;
+        const phone = user?._phoneNum;
+
+        const ambulanceForm = new AmbulanceForm(place, UID, phone);
+        const OID = ambulanceForm.OID;
+
+        return set(ref(db, `AmbulanceForms/${OID}`), ambulanceForm);
+    }
+
+    public async getAllAmbulanceForms() {
+        const db = getDatabase();
+
+        return get(ref(db, `AmbulanceForms`));
+    }
+
+    public async dismissAmbulanceForm(OID: string) {
+        const db = getDatabase();
+
+        return remove(ref(db, `AmbulanceForms/${OID}`));
     }
 
     public cancelOrder(healthForm: HealthForm): boolean {
