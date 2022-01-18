@@ -3,6 +3,7 @@ import LoginManager from './LoginManager';
 import LectureManager from './LectureManager';
 import Seat from './Seat';
 import User from './User'
+import Dorm from './Dorm';
 
 export default class Student extends User{
 
@@ -11,15 +12,15 @@ export default class Student extends User{
     private _sportPunishStatus:boolean = false;
     private _resideInDorm:boolean;
     private _lectures:Lecture[] | null;
-    private _roomMateNames:string;
+    private _dorm:Dorm;
 
     //Constructor
-    public constructor(name:string, mail:string, password:string, role:string, address:string, phoneNumber:string, hesCode:string, ID:number, resideInDorm:boolean, roomMateNames:string){
-        super(name,mail,password,role,address,phoneNumber,hesCode);
+    public constructor(name:string, mail:string, password:string, role:string, phoneNumber:string, hesCode:string, ID:number, resideInDorm:boolean, dorm:Dorm){
+        super(name,mail,password,role,phoneNumber,hesCode);
         this._ID = ID;
         this._resideInDorm = resideInDorm;
         this._lectures = null;
-        this._roomMateNames = "";
+        this._dorm = dorm;
     }
 
     //Methods
@@ -69,11 +70,10 @@ export default class Student extends User{
         this._lectures = lectures;
     }
     
-    public get roomMateNames(): string {
-        return this._roomMateNames;
+    public get dorm(): Dorm {
+        return this._dorm;
     }
-    public set roomMateNames(roomMateNames: string) {
-        this._roomMateNames = roomMateNames;
+    public set dorm(dorm: Dorm) {
+        this._dorm = dorm;
     }
-
 }

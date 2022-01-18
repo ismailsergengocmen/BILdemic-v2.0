@@ -5,8 +5,8 @@ import CafeteriaManager from './CafeteriaManager'
 export default class CafeteriaStaff extends User {
   
   //Constructor
-  public constructor(name: string, mail: string, password: string, role: string, address: string, phoneNumber: string, hesCode: string) {
-    super(name,mail,password,role,address,phoneNumber,hesCode);
+  public constructor(name: string, mail: string, password: string, role: string,  phoneNumber: string, hesCode: string) {
+    super(name,mail,password,role,phoneNumber,hesCode);
   }
 
   //Methods

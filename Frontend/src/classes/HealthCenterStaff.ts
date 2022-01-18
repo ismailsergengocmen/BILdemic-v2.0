@@ -3,8 +3,8 @@ import HealthForm from './HealthForm'
 
 export default class HealthCenterStaff extends User {
   
-  public constructor(name: string, mail: string, password: string, role: string, address: string, phoneNum: string, hesCode: string){
-        super(name, mail, password, role, address, phoneNum, hesCode);
+  public constructor(name: string, mail: string, password: string, role: string, phoneNum: string, hesCode: string){
+        super(name, mail, password, role, phoneNum, hesCode);
     }
 
   public closeForm(healthForm: HealthForm): boolean {

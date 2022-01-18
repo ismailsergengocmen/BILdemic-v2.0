@@ -136,7 +136,7 @@
           :label="$t('DormRoomNo')" 
           filled
           square
-          v-model="name"
+          v-model="dormRoomNo"
           class="col"
           color="secondary"
           :rules="[ val => !!val]"
@@ -172,7 +172,7 @@
       align="center"
       class="q-mt-sm"
       :style="isMobile ? 'width: 50%' : 'width: 30%'"
-      @click.prevent="register(name, mail, password, role, '', '', hes, id, resideInDorm, '')"
+      @click.prevent="register(name, mail, password, role, dorm, phone, hes, id, resideInDorm, dormRoomNo)"
       :disable="loading"
     />
   </q-form>
@@ -194,15 +194,16 @@ export default {
     const router = useRouter();
     const { t } = useI18n({})
 
-    const name = ref('');
-    const role = ref('');
-    const id = ref('');
-    const mail = ref('');
+    const name = ref(null);
+    const role = ref(null);
+    const id = ref(null);
+    const mail = ref(null);
     const phone = ref(null);
-    const hes = ref('');
+    const hes = ref(null);
     const resideInDorm = ref(false);
     const dorm = ref(null);
-    const password = ref('');
+    const dormRoomNo = ref(null);
+    const password = ref(null);
     const show = ref(false);
 
     const showRegisterOkMessage = ref(false);
@@ -244,9 +245,9 @@ export default {
       return props.isMobile ? "q-gutter-md" : "q-pa-md q-gutter-md";
     })
 
-    const register = async (name, mail, password, role, address, phone, hes, id, resideInDorm, roomMateNames) => {
-      if (inputValidity(name, mail, password, role, phone, hes, id)) {
-        lm.createUser(name, mail, password, role, address, phone, hes, id, resideInDorm, roomMateNames).then(() => {
+    const register = async (name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo) => {
+      if (inputValidity(name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo)) {
+        lm.createUser(name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo).then(() => {
         showRegisterOkMessage.value = true;
         loading.value = true;
         setTimeout(() => {
@@ -267,16 +268,36 @@ export default {
       
     }
 
-    const inputValidity = (name, mail, password, role, phone, hes, id) => {
-      if (password.length < 8) {
+    const inputValidity = (name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo) => {
+      if (name === null || mail === null || password === null 
+            || role === null || phone === null || hes === null 
+            || id === null) {
+              console.log(1);
         return false;
       }
-      else if (name === '' || mail === '' || role === '' || phone === '', hes === '', id === null) {
+      else if (password.length < 8 || hes.length != 10 || phone.length != 10) {
+        console.log(2);
         return false;
+      }
+      else if (resideInDorm && (dormNo === null || dormRoomNo === null)) {
+        console.log(3);
+        return false;
+      }
+      else if (role == "Student") {
+        console.log(4);
+        return mail.includes('\@ug.bilkent.edu.tr');
+      }
+      else if (role == "Instructor") {
+        console.log(5);
+        return (mail.includes('\@fen.bilkent.edu.tr') 
+                || mail.includes('\@cs.bilkent.edu.tr')
+                || mail.includes('\@bilkent.edu.tr') 
+                || mail.includes('\@ee.bilkent.edu.tr'));
       }
       else {
-        return true;
-      }
+        console.log(6);
+        return mail.includes('\@bilkent.edu.tr');
+      } 
     }
     
     return {
@@ -292,6 +313,7 @@ export default {
       resideInDorm,
       roleOptions,
       dorm,
+      dormRoomNo,
       dormOptions,
       emailRuleSchool,
       emailRuleValidity,
