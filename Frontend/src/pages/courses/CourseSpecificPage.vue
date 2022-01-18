@@ -77,9 +77,6 @@ export default {
       lm.getMySeat(props.id).then((val) => {
         personalCol.value = val.val()?.col;
         personalRow.value = val.val()?.row;
-
-        console.log("personalCol.value: ", personalCol.value);
-        console.log("personalRow.value: ", personalRow.value);
       });
     });
 

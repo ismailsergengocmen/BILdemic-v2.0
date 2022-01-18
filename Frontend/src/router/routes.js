@@ -20,6 +20,7 @@ import SportsStaffPage from "../pages/sports/SportsStaffPage"
 import HealthCenterStaffPage from "../pages/health/HealthCenterStaffPage.vue"
 import DiagnovirStaffPage from "../pages/diagnovir/DiagnovirStaffPage.vue"
 import ProfilePage from "../pages/ProfilePage.vue"
+import Error404 from "../pages/Error404"
 
 const routes = [
   {
@@ -70,7 +71,7 @@ const routes = [
       },
       {
         path: 'diagnovir/tests',
-        name: 'TestResultsPage',
+        name: 'DiagnovirTestResultsPage',
         component: TestResultsPage,
         meta: {
           haveAccess: ['Student', 'Instructor', 'SportsCenterStaff', 'CafeteriaStaff']
@@ -196,7 +197,8 @@ const routes = [
   },
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/Error404.vue')
+    name: 'Error404',
+    component: Error404
   }
 ]
 export default routes

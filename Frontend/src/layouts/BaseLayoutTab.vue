@@ -6,77 +6,7 @@
         bordered
         behavior="desktop"
       >
-        <div style="height: calc(100% - 100px); margin-top: 100px">
-          <q-list class="q-py-none">
-            <div>
-              <q-item clickable v-ripple to="/~/courses" active-class="bg-teal-2">
-                <q-item-section class="q-ml-sm">
-                  {{ $t('Courses') }}
-                </q-item-section>
-              </q-item>
-  
-              <q-item clickable v-ripple to="/~/diagnovir" active-class="bg-teal-2">
-                <q-item-section class="q-ml-sm">
-                  {{ $t('DiagnovirCenter') }}
-                </q-item-section>
-              </q-item>
-  
-              <q-item clickable v-ripple to="/~/health" active-class="bg-teal-2">
-                <q-item-section class="q-ml-sm">
-                  {{ $t('HealthCenter') }}
-                </q-item-section>
-              </q-item>
-  
-              <q-item clickable v-ripple to="/~/sports" active-class="bg-teal-2">
-                <q-item-section class="q-ml-sm">
-                  {{ $t('SportsCenter') }}
-                </q-item-section>
-              </q-item>
-  
-              <q-item clickable v-ripple to="/~/cafeteria" active-class="bg-teal-2">
-                <q-item-section class="q-ml-sm">
-                  {{ $t('Cafeteria') }}
-                </q-item-section>
-              </q-item>
-  
-              <q-item clickable v-ripple to="/~/weekly" active-class="bg-teal-2">
-                <q-item-section class="q-ml-sm">
-                  {{ $t('WeeklyReport') }}
-                </q-item-section>
-              </q-item>
-            </div>
-
-            <div class="fixed-bottom q-mb-sm">
-              <q-item clickable v-ripple style="min-height: 35px;" to="/~/profile" active-class="bg-teal-2">
-                <q-item-section class="q-ml-sm">
-                  {{ $t('ProfileSettings') }}
-                </q-item-section>
-              </q-item>
-
-              <q-item clickable v-ripple style="min-height: 35px;" to="/~/important" active-class="bg-teal-2">
-                <q-item-section class="q-ml-sm">
-                    {{ $t('ImportantNumbers') }}
-                </q-item-section>
-              </q-item>
-
-              <q-item clickable v-ripple style="min-height: 35px;" @click="logoutUser">
-                <q-item-section class="q-ml-sm">
-                  {{ $t('LogOut') }}
-                </q-item-section>
-              </q-item>
-            </div>
-          </q-list>
-        </div>
-
-        <div class="absolute-top column items-center" active-class="bg-teal-2">
-          <router-link to="/home">
-            <q-img 
-              width="170px"
-              src="../assets/logo_bildemic.png" 
-              class="q-mt-md" 
-            /> 
-          </router-link> 
-        </div>
+        <base-tabs :role="currentUserRole" @logout="logout"/>
       </q-drawer>
 
       <q-page-container>
@@ -86,12 +16,18 @@
 </template>
 
 <script>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
-import LoginManager from '../classes/LoginManager.ts'
+import LoginManager from '../classes/LoginManager'
+import UserManager from '../classes/UserManager'
 import { useRouter } from 'vue-router'
+import { Store } from '../store/index'
+import BaseTabs from './BaseTabs.vue'
 
 export default {
+  components: { 
+    BaseTabs 
+  },
   name: 'BaseLayoutTab',
 
   setup() {
@@ -110,10 +46,17 @@ export default {
       drawer.value = !drawer.value;
     }
 
+    const um = UserManager.getInstance();
     const lm = LoginManager.getInstance();
     const router = useRouter();
 
-    const logoutUser = () => {
+    const currentUserRole = ref(false);
+
+    onBeforeMount(async () => {
+      currentUserRole.value = (await um.getUserInfo(Store.state.settings.currentUserUID)).val()._role;
+    })
+
+    const logout = () => {
       lm.logout();
       router.push('/auth/login');
     }
@@ -121,7 +64,8 @@ export default {
     return {
       drawer,
       toggleDrawer,
-      logoutUser
+      logout,
+      currentUserRole
     }
   },
 }

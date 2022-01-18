@@ -31,12 +31,6 @@
               </q-item-section>
             </q-item>
 
-            <q-item clickable v-ripple to="/~/important">
-              <q-item-section class="q-ml-sm">
-                {{ $t('ImportantNumbers') }}
-              </q-item-section>
-            </q-item>
-
             <q-item clickable v-ripple @click="logoutUser">
               <q-item-section class="q-ml-sm">
                 {{ $t('LogOut') }}
