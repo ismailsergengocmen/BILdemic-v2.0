@@ -178,5 +178,6 @@ export default {
   SelectNewProfilePhoto: 'Yeni profil resmi seçmek için tıklayın',
   PhotoUploadSuccessful: 'Profil resmi başarıyla güncellendi.',
   DormRoomNo: 'Yurt oda numarası',
-  AmbulaneCallDone: 'İletişim bilgileriniz Bilkent Sağlık Merkezi\'ne iletilmiştir. Size en kısa sürede telefonunuzdan ulaşılacaktır.'
+  AmbulaneCallDone: 'İletişim bilgileriniz Bilkent Sağlık Merkezi\'ne iletilmiştir. Size en kısa sürede telefonunuzdan ulaşılacaktır.',
+  Symptoms: 'Hastada Görülen Belirtiler'
 }

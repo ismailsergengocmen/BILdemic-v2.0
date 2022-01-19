@@ -6,7 +6,7 @@
     </q-banner>
     
     <div class="row justify-center q-mt-lg">
-      <healt-form />
+      <health-form @submit="submit"/>
     </div>
   </div>
 </template>
@@ -14,43 +14,20 @@
 <script>
 import { computed, ref, watch } from 'vue'
 import { useQuasar } from 'quasar'
-import HealtForm from '../../components/health/HealthForm.vue'
+import HealthForm from '../../components/health/HealthForm.vue'
+import HealthManager from '../../classes/HealthManager'
+import { Store } from '../../store/index'
+import { useRouter } from 'vue-router'
 
 export default {
   name: "HealthCenterPage",
   components: {
-    HealtForm
+    HealthForm
   },
-  computed: {
-    slots() {
-      return [
-        {
-          label: this.$t('ReservationDate'), 
-          data:  '11/12/2021'
-        },
-        {
-          label: this.$t('ReservationTime'), 
-          data:  '08.30'
-        },
-        {
-          label: this.$t('ReservationPlace'), 
-          data:  'Health Center'
-        }
-      ]
-    },
-    data() {
-      return {
-        date: '11/12/2021',
-        time: '08.30',
-        place: 'Health Center',
-        result: 'positive'
-      }
-    }
-
-  },
-
   setup(props, ctx) {
     const $q = useQuasar();
+    const hm = HealthManager.getInstance();
+    const router = useRouter();
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -69,10 +46,18 @@ export default {
       ctx.emit('toggleDrawer');
     }
 
+    const submit = (selection) => {
+      const UID = Store.state.settings.currentUserUID;
+      hm.createHealthForm(UID, selection).then(() => {
+        router.push('/~/health');
+      });
+    }
+
     return {
       toggleDrawer,
       isMobile,
-      hasReservation
+      hasReservation,
+      submit
     }
   },
 }

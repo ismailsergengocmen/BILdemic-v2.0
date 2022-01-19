@@ -47,8 +47,17 @@ export default class HealthManager {
         return remove(ref(db, `AmbulanceForms/${OID}`));
     }
 
-    public cancelOrder(healthForm: HealthForm): boolean {
-        //TO DO
-        return true;
+    public async createHealthForm(UID: string, symptomsList: Array<string>) {
+        const db = getDatabase();
+        const healthForm = new HealthForm(UID, false, false, symptomsList);
+        const OID = healthForm.OID;
+
+        return set(ref(db, `HealthForms/${OID}`), healthForm);
+    }
+
+    public async getAllHealthForms() {
+        const db = getDatabase();
+
+        return get(ref(db, `HealthForms`));
     }
 }

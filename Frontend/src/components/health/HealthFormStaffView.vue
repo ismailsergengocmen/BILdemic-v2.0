@@ -1,17 +1,17 @@
 <template>
-  <div class="column q-pa-md" style="width: 500px;">
+  <div class="column q-pa-sm" style="width: 500px;">
     <div class="column items-center">
-      <q-img src="https://placeimg.com/500/300/nature" style="width: 150px"/>
+      <q-img :src="person?.profilePic" style="width: 150px"/>
       <div class="q-ma-md">
-        <div>Sponge Bob</div>
-        <div>21802918</div>
+        <div> {{ person?.name }} </div>
+        <div> {{ person?.ID }} </div>
       </div>
     </div>
 
-    <q-list dense class="q-mt-xl">
+    <q-list dense>
       <q-item clickable>
         <q-item-section>
-          <b>Patient's symptoms</b>
+          <b> {{ $t('Symptoms') }} </b>
         </q-item-section>
       </q-item>
       <q-item clickable v-for="symptom in symptoms" :key="symptom">
@@ -20,7 +20,7 @@
         </q-item-section>
         
         <q-item-section>
-          {{ symptom }}
+          {{ $t(capitalizedSymptom(symptom)) }}
         </q-item-section>
       </q-item>
     </q-list>
@@ -36,14 +36,15 @@
 <script>
 export default {
   name: "HealthFormStaffView",
-  props: {
-    // symptoms: Array
-  },
+  props: ['person', 'symptoms'],
+
   setup() {
-    const symptoms = ['Öksürük', 'Baş Ağrısı', 'Halsizlik'];
-    
+    const capitalizedSymptom = (symptom) => {
+      return symptom.charAt(0).toUpperCase() + symptom.slice(1); 
+    }
+
     return {
-      symptoms
+      capitalizedSymptom
     }
   },
 }

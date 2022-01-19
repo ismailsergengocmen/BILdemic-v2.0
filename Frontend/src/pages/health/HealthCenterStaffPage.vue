@@ -4,6 +4,7 @@
       :cardInfos="cardInfos"
       :emergencyInfos="emergencies"
       :ambulanceFormCount="ambulanceFormCount"
+      :healthForms="healthForms"
       @dismiss="dismiss"
     />
 
@@ -136,8 +137,44 @@ export default {
       })
     }
 
+    const healthForms = ref(null);
+
+    const fetchHealthForms = async () => {
+      hm.getAllHealthForms().then((val) => {
+        healthForms.value = [];
+        const forms = val.val();
+
+        const forLoop = async _ => {
+          for (let key in forms) {
+            const UID = forms[key]?._ownerUID;
+            const owner = (await um.getUserInfo(UID)).val();
+
+            const form = {
+              url: owner._profilePic,
+              data: [
+                owner._name, 
+                owner._ID,
+                formatTime(forms[key]._time, forms[key]._date)
+              ],
+              uniqueID: forms[key]._OID,
+              symptoms: forms[key]._symptomsList 
+            }
+
+            healthForms.value.push(form);
+          }
+        }
+
+        forLoop();
+
+        
+      }).catch((err) => {
+        console.log('err: ', err);
+      })
+    }
+
     onBeforeMount(async () => {
       await fetchAmbulanceForms();
+      await fetchHealthForms();
     })
 
     const formatPhoneNumber = (phone) => {
@@ -160,7 +197,8 @@ export default {
       fabPos,
       ambulanceFormCount,
       emergencies,
-      dismiss
+      dismiss,
+      healthForms
     }
   },
 }

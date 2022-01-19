@@ -39,14 +39,14 @@
               <q-scroll-area class="full-width q-mt-md" style="height: 500px" >
                 <div class="column q-gutter-y-md full-width items-center">
                   <generic-user-card 
-                    v-for="info in cardInfos" 
+                    v-for="info in healthForms" 
                     :key="info"  
                     :cardInfo="info"
                     firstIcon="mdi-file-document"
                     firstIconColor="indigo-6"
                     :firstIconTooltip="$t('SeeHealthForm')"
                     class="text-black"
-                    @button1Clicked="showForm"
+                    @firstClicked="showForm"
                   />
                 </div>
               </q-scroll-area>
@@ -82,7 +82,7 @@
                     secondIconColor="indigo-6"
                     :secondIconTooltip="$t('SeeHealthForm')"
                     class="text-black"
-                    @button2Clicked="showForm"
+                    @secondClicked="showForm"
                   />
                 </div>
               </q-scroll-area>
@@ -116,7 +116,10 @@
   <q-dialog v-model="showHealthForm">
     <q-card>
       <q-card-section class="col items-center">
-        <health-form-staff-view />
+        <health-form-staff-view 
+          :person="clickedPerson" 
+          :symptoms="clickedSymptoms"
+        />
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -128,7 +131,6 @@
 import { ref } from 'vue'
 import GenericUserCard from '../generic/GenericUserCard.vue'
 import HealthFormStaffView from '../health/HealthFormStaffView.vue'
-import HealthManager from '../../classes/HealthManager'
 
 export default {
   name: 'HealthCenterStaffTabs',
@@ -136,7 +138,7 @@ export default {
     GenericUserCard,
     HealthFormStaffView
   },
-  props: ['cardInfos', 'emergencyInfos', 'ambulanceFormCount'],
+  props: ['cardInfos', 'emergencyInfos', 'ambulanceFormCount', 'healthForms'],
 
   setup(props, ctx) {
     const tab = ref('newHealthForms');
@@ -144,14 +146,22 @@ export default {
     const searchChat = ref(null);
 
     const showHealthForm = ref(false);
+    const clickedPerson = ref(null);
+    const clickedSymptoms = ref(null);
 
     const dismiss = (data) => {
       ctx.emit('dismiss', data.uniqueID);
     }
 
-    const showForm = () => {
-      // YOU NEED TO GET USER DATA FROM THE CARD WHEN EMITTING
+    const showForm = (data) => {
       showHealthForm.value = true;
+
+      clickedPerson.value = {
+        name: data.data[0],
+        ID: data.data[1],
+        profilePic: data.url
+      };
+      clickedSymptoms.value = data.symptoms;
     }
 
     return {
@@ -160,7 +170,9 @@ export default {
       searchChat,
       showHealthForm,
       showForm,
-      dismiss
+      dismiss,
+      clickedPerson,
+      clickedSymptoms
     } 
   },
 }
