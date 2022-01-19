@@ -6,9 +6,9 @@
   </q-banner>
 
   <div class="q-pa-md row justify-center">
-    <div style="width: 100%; max-width: 400px">
-      <q-scroll-area style="height: 400px;">
-        <div v-for="message in messages" :key="message.id">
+    <div style="width: 100%;" >
+      <q-scroll-area style="height: 400px;" ref="scrollAreaRef">
+        <div v-for="message in messages" :key="message.id" class="q-px-sm">
           <q-chat-message
             :sent="message.uid === UID"
             :bg-color="message.uid === UID ? 'light-green-7' : 'teal-5'"
@@ -28,7 +28,7 @@
       dense 
       class="col-9"
       color="secondary" 
-      style="width: 100%; max-width: 400px"
+      style="width: 90%"
     />
     <q-btn 
       icon="mdi-send"
@@ -43,13 +43,12 @@
 
 <script>
 import { ref, onMounted, watch, computed } from 'vue'
+import { Store } from '../../store/index'
+import { useQuasar } from 'quasar'
+import { getDatabase, ref as databaseRef, onValue } from 'firebase/database'
 import moment from 'moment'
 import ChatManager from '../../classes/ChatManager'
 import UserManager from '../../classes/UserManager'
-import { Store } from '../../store/index'
-import { useQuasar } from 'quasar'
-
-import { getDatabase, ref as databaseRef, onValue } from 'firebase/database'
 
 export default {
   name: 'Chat',
@@ -121,9 +120,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.full {
-  height: calc(100% - 50px);
-}
-</style>
