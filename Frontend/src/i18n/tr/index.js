@@ -179,5 +179,6 @@ export default {
   PhotoUploadSuccessful: 'Profil resmi başarıyla güncellendi.',
   DormRoomNo: 'Yurt oda numarası',
   AmbulaneCallDone: 'İletişim bilgileriniz Bilkent Sağlık Merkezi\'ne iletilmiştir. Size en kısa sürede telefonunuzdan ulaşılacaktır.',
-  Symptoms: 'Hastada Görülen Belirtiler'
+  Symptoms: 'Hastada Görülen Belirtiler',
+  HealthCenterChat: 'Sağlık Merkezi Sohbeti'
 }

@@ -21,6 +21,7 @@ import HealthCenterStaffPage from "../pages/health/HealthCenterStaffPage.vue"
 import DiagnovirStaffPage from "../pages/diagnovir/DiagnovirStaffPage.vue"
 import ProfilePage from "../pages/ProfilePage.vue"
 import Error404 from "../pages/Error404"
+import Chat from "../components/generic/Chat.vue"
 
 const routes = [
   {
@@ -91,6 +92,15 @@ const routes = [
         component: HealthFormPage,
         meta: {
           haveAccess: ['Student', 'Instructor', 'SportsCenterStaff', 'CafeteriaStaff']
+        }
+      },
+      {
+        path: 'health/chat/:locationUID',
+        name: 'HealthCenterChat',
+        component: Chat,
+        props: true,
+        meta: {
+          haveAccess: ['Student', 'Instructor', 'SportsCenterStaff', 'CafeteriaStaff', 'HealthCenterStaff']
         }
       },
       {

@@ -179,5 +179,6 @@ export default {
   PhotoUploadSuccessful: 'Your profile photo successfully updated.',
   DormRoomNo: 'Dorm room no',
   AmbulaneCallDone: 'Your communication information is sent to Bilkent Health Center. You will be contacted by the health center staff shortly.',
-  Symptoms: 'Patient\'s Symptoms' 
+  Symptoms: 'Patient\'s Symptoms',
+  HealthCenterChat: 'Health Center Chat'
 }
