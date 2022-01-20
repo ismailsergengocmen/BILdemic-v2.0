@@ -192,5 +192,7 @@ export default {
   Undo: 'Undo',
   UndoSuccessful: 'Undo successful',
   ChatEnded: 'Chat successfully ended',
-  HealthFormCreated: 'Patient form is successfully created'
+  HealthFormCreated: 'Patient form is successfully created',
+  CourseEnrollSuccessful: 'Successfully enrolled to the course',
+  CourseCreationSuccessful: 'Successfully created the course'
 }

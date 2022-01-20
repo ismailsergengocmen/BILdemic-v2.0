@@ -192,5 +192,7 @@ export default {
   Undo: 'Geri al',
   UndoSuccessful: 'Geri alma başarılı',
   ChatEnded: 'Görüşme başarılı bir şekilde sonlandırıldı',
-  HealthFormCreated: 'Hasta formu başarılı bir şekilde gönderildi'
+  HealthFormCreated: 'Hasta formu başarılı bir şekilde gönderildi',
+  CourseEnrollSuccessful: 'Ders kayıt işlemi başarılı',
+  CourseCreationSuccessful: 'Başarılı bir şekilde ders oluşturuldu'
 }
