@@ -169,18 +169,6 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
-    <q-dialog v-model="showMessage" seamless position="top">
-      <q-card style="width: 300px" :class="dialogColor">
-        <q-card-section>
-          <q-banner dense inline-actions :class="`text-white ${dialogColor}`" >
-            <div class="row justify-center">
-            {{ dialogMessage }}
-            </div>
-          </q-banner>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </div>
 </template>
 
@@ -188,14 +176,16 @@
 import UserManager from "../classes/UserManager"
 import SettingsManager from "../classes/SettingsManager"
 import { Store } from "../store/index.js"
-import { onBeforeMount, ref, computed } from "vue"
+import { onBeforeMount, ref } from "vue"
 import { useI18n } from 'vue-i18n'
+import { useQuasar } from 'quasar'
 
 export default {
   name: "ProfilePageForm",
   setup() {
     const um = UserManager.getInstance();
     const sm = SettingsManager.getInstance();
+    const $q = useQuasar();
     const { t } = useI18n({});
 
     const currentUser = ref(null);
@@ -212,9 +202,6 @@ export default {
     const currentPassword = ref(null);
     const newPassword = ref(null);
     const newPasswordAgain = ref(null); 
-
-    const message = ref(null);
-    const showMessage = ref(false);
 
     onBeforeMount(async () => {
       const currentUserUID = Store.state.settings.currentUserUID;
@@ -234,26 +221,26 @@ export default {
     const changePassword = async () => {
       sm.checkPassword(currentPassword.value).then(() => {
         if (newPassword.value == null || newPassword.value?.length < 8) {
-          message.value = 0;
-          showMessage.value = true;
-          setTimeout(() => {
-            showMessage.value = false;
-          }, 3000);
+          $q.notify({
+            position: 'top',
+            message: t('ShortPasswordError'),
+            color: 'negative'
+          });
         }
         else if (newPassword.value != newPasswordAgain.value) {
-          message.value = 1;
-          showMessage.value = true;
-          setTimeout(() => {
-            showMessage.value = false;
-          }, 3000);          
+          $q.notify({
+            position: 'top',
+            message: t('PasswordNotMatching'),
+            color: 'negative'
+          });
         }
         else {
           sm.updatePassword(newPassword.value).then(() => {
-            message.value = 2;
-            showMessage.value = true;
-            setTimeout(() => {
-              showMessage.value = false;
-            }, 3000);
+            $q.notify({
+              position: 'top',
+              message: t('PasswordChangeSuccessful'),
+              color: 'positive'
+            });
 
             showPopup.value = false;
             currentPassword.value = null;
@@ -261,66 +248,28 @@ export default {
             newPasswordAgain.value = null;
           })
           .catch(() => {
-            message.value = 3;
-            showMessage.value = true;
-            setTimeout(() => {
-              showMessage.value = false;
-            }, 3000);
+            $q.notify({
+              position: 'top',
+              message: t('UnexpectedError'),
+              color: 'negative'
+            });
           });
         }
       })
       .catch((val) => {
-        message.value = 4;
-        showMessage.value = true;
-        setTimeout(() => {
-          showMessage.value = false;
-        }, 2000);
+        $q.notify({
+          position: 'top',
+          message: t('WrongPassword'),
+          color: 'negative'
+        });
       })
     }
-
-    const dialogMessage = computed(() => {
-      if (message.value == 0) {
-        return t('ShortPasswordError');
-      }
-      else if (message.value == 1) {
-        return t('PasswordNotMatching');
-      }
-      else if (message.value == 2) {
-        return t('PasswordChangeSuccessful');
-      }
-      else if (message.value == 3) {
-        return t('UnexpectedError');
-      }
-      else if (message.value == 4) {
-        return t('WrongPassword');
-      }
-      else if (message.value == 5) {
-        return t('ProfileUpdateSuccessful');
-      }
-      else {
-        return t('HesCodeNotUpdated');
-      }
-    });
-
-    const dialogColor = computed(() => {
-      if (message.value == 2 || message.value == 5) {
-        return "bg-positive";
-      }
-      else if (message.value == 6) {
-        return "bg-indigo-6";
-      }
-      else {
-        return "bg-negative";
-      }
-    })
 
     const save = async () => {  
       const currentPhoneNum = currentUser.value?._phoneNum;
       const currentDormNo = currentUser.value?._dorm?._dormNo;
       const currentDormRoomNo = currentUser.value?._dorm?._dormRoomNo;
       const currentHESCode = currentUser.value?._hesObject._hesCode;
-
-      message.value = 5;
 
       if (phone.value !== currentPhoneNum) {
         await sm.changePhone(phone.value);
@@ -330,17 +279,28 @@ export default {
       }
       if (hesCode.value !== currentHESCode) {
         if (hesCode.value.length !== 10) {
-          message.value = 6;
+          $q.notify({
+            position: 'top',
+            message: t('HesCodeNotUpdated'),
+            color: 'indigo-6'
+          });
         }
         else {
           await sm.changeHES(hesCode.value);
+          $q.notify({
+            position: 'top',
+            message: t('ProfileUpdateSuccessful'),
+            color: 'positive'
+          });
         }
       }
-
-      showMessage.value = true;
-      setTimeout(() => {
-        showMessage.value = false;
-      }, 3000);
+      else {
+        $q.notify({
+          position: 'top',
+          message: t('ProfileUpdateSuccessful'),
+          color: 'positive'
+        });
+      }
     }
 
     const dormOptions = [
@@ -363,9 +323,6 @@ export default {
       newPassword,
       newPasswordAgain,
       changePassword,
-      showMessage,
-      dialogMessage,
-      dialogColor,
       save
     }
   },

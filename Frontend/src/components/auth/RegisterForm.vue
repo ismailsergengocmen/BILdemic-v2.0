@@ -1,29 +1,5 @@
 <template>
 <div class="full-width column items-center">
-  <q-dialog v-model="showRegisterOkMessage" seamless position="top">
-    <q-card style="width: 300px" class="bg-secondary">
-      <q-card-section>
-        <q-banner dense inline-actions class="text-white bg-secondary" >
-          <div class="row justify-center">
-            {{ $t("RegisterDone") }}
-          </div>
-        </q-banner>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-
-  <q-dialog v-model="showEmptySlotsError" seamless position="top">
-    <q-card style="width: 300px" class="bg-negative">
-      <q-card-section>
-        <q-banner dense inline-actions class="text-white bg-negative" >
-          <div class="row justify-center">
-            {{ $t("EmptySlotsError") }}
-          </div>
-        </q-banner>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-
   <q-form :class="`${formStyling} greedy`" :style="isMobile ? 'width: 90%' : 'width: 60%'">
     <div class="column q-gutter-y-sm">
       <div class="row q-gutter-x-md">
@@ -184,7 +160,8 @@
 import { ref, computed } from "vue"
 import LoginManager from "../../classes/LoginManager"
 import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
+import { useI18n } from "vue-i18n"
+import { useQuasar } from "quasar"
 
 export default {
   name: "RegisterForm",
@@ -194,6 +171,8 @@ export default {
   setup(props) {
     const router = useRouter();
     const { t } = useI18n({})
+    const $q = useQuasar();
+    const lm = LoginManager.getInstance();
 
     const name = ref(null);
     const role = ref(null);
@@ -206,12 +185,7 @@ export default {
     const dormRoomNo = ref(null);
     const password = ref(null);
     const show = ref(false);
-
-    const showRegisterOkMessage = ref(false);
-    const showEmptySlotsError = ref(false);
     const loading = ref(false);
-
-    const lm = LoginManager.getInstance();
     
     const roleOptions = [
         'Student', 'Instructor', 'DiagnovirTester', 'CafeteriaStaff', 'SportsCenterStaff', 'HealthCenterStaff'
@@ -249,24 +223,25 @@ export default {
     const register = async (name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo) => {
       if (inputValidity(name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo)) {
         lm.createUser(name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo).then(() => {
-        showRegisterOkMessage.value = true;
-        loading.value = true;
-        setTimeout(() => {
-          showRegisterOkMessage.value = false;
+          loading.value = true;
+          $q.notify({
+            position: 'top',
+            color: 'positive',
+            message: t('RegisterDone')
+          });
           router.push('/auth/login');
-          }, 4000)
         })
         .catch((error) => {
           console.log(error)
         })
       }
       else {
-        showEmptySlotsError.value = true;
-        setTimeout(() => {
-          showEmptySlotsError.value = false;
-        }, 4000)
-      }
-      
+        $q.notify({
+          position: 'top',
+          color: 'negative',
+          message: t('EmptySlotsError') 
+        });
+      }  
     }
 
     const inputValidity = (name, mail, password, role, dormNo, phone, hes, id, resideInDorm, dormRoomNo) => {
@@ -314,8 +289,6 @@ export default {
       emailRuleSchool,
       emailRuleValidity,
       register,
-      showRegisterOkMessage,
-      showEmptySlotsError,
       loading
     }
   },

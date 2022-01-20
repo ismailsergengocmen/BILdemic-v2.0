@@ -10,18 +10,6 @@
       :noReservation="noReservation"
       @cancelReservations="cancelReservations"
     />
-
-    <q-dialog v-model="reservationCancelled" seamless position="top">
-      <q-card style="width: 300px" class="bg-positive">
-        <q-card-section>
-          <q-banner dense inline-actions class="text-white bg-positive" >
-            <div class="row justify-center">
-            {{ $t("SportsReservationCancelled") }}
-            </div>
-          </q-banner>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </div>
 </template>
 
@@ -41,6 +29,8 @@ export default {
 
   setup(props, ctx) {
     const $q = useQuasar();
+    const sm = SportManager.getInstance();
+    const { t } = useI18n({});
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -57,11 +47,8 @@ export default {
       ctx.emit('toggleDrawer');
     }
 
-    const sm = SportManager.getInstance();
     const slots = ref(null);
-    const reservationCancelled = ref(false);
-    const { t } = useI18n({})
-
+    
     const getSportsReservations = async () => {
       const UID = Store.state.settings.currentUserUID;
       sm.getSportsRes(UID).then((val) => {
@@ -103,11 +90,12 @@ export default {
       const UID = Store.state.settings.currentUserUID;
       await sm.cancelOrder(UID, OID);
       await getSportsReservations();
-      reservationCancelled.value = true;
 
-      setTimeout(() => {
-        reservationCancelled.value = false;
-      }, 2000);
+      $q.notify({
+        position: 'top',
+        color: 'positive',
+        message: t('SportsReservationCancelled')
+      });
     }
 
     onBeforeMount(async () => {
@@ -123,8 +111,7 @@ export default {
       isMobile,
       slots,
       cancelReservations,
-      noReservation,
-      reservationCancelled
+      noReservation
     }
   },
 }

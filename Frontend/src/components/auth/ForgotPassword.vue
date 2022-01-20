@@ -1,29 +1,5 @@
 <template>
 <div>
-  <q-dialog v-model="showErrorMessage" seamless position="top">
-    <q-card style="width: 300px" class="bg-negative">
-      <q-card-section>
-        <q-banner dense inline-actions class="text-white bg-negative" >
-          <div class="row justify-center">
-          {{ $t("PasswordResetError") }}
-          </div>
-        </q-banner>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-
-  <q-dialog v-model="showResetMailSent" seamless position="top">
-    <q-card style="width: 300px" class="bg-positive">
-      <q-card-section>
-        <q-banner dense inline-actions class="text-white bg-positive" >
-          <div class="row justify-center">
-          {{ $t("PasswordResetSent") }}
-          </div>
-        </q-banner>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-
   <q-form style="width: 410px" class="q-py-md">
     <q-input 
       :label="$t('Email')" 
@@ -62,49 +38,45 @@
 
 <script>
 import { ref } from "vue"
-import { useRouter } from "vue-router"
 import LoginManager from "../../classes/LoginManager"
+import { useQuasar } from "quasar"
+import { useI18n } from "vue-i18n"
 
 export default {
   name: "ForgotPassword",
 
   setup(props, ctx) {
-    const mail = ref('');
-    const password = ref('');
-    const showResetMailSent = ref(false);
-    const showErrorMessage = ref(false);
+    const $q = useQuasar();
+    const { t } = useI18n({});
+    const lm = LoginManager.getInstance();
 
-    const router = useRouter();
+    const mail = ref('');
     
     const goBack = () => {
       ctx.emit('goBack');
     }
 
-    const lm = LoginManager.getInstance();
-
     const reset = async (email) => {
-      lm.resetPassword(email)
-        .then((userCredential) => {
-          showResetMailSent.value = true;
-          setTimeout(() => {
-            showResetMailSent.value = false;
-          }, 4000);
-          router.push('/auth/login');
-        })
-        .catch((error) => {
-          showErrorMessage.value = true;
-          setTimeout(() => {
-            showErrorMessage.value = false;
-          }, 4000);
+      lm.resetPassword(email).then((userCredential) => {
+        $q.notify({
+          position: 'top',
+          message: t('PasswordResetSent'),
+          color: 'positive'
         });
+        goBack();
+
+      }).catch((error) => {
+        $q.notify({
+          position: 'top',
+          message: t("PasswordResetError"),
+          color: 'negative'
+        });
+      });
     }
 
     return {
       mail,
-      password,
       reset,
-      showResetMailSent,
-      showErrorMessage,
       goBack
     }
   },
