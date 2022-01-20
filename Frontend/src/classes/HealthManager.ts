@@ -47,17 +47,43 @@ export default class HealthManager {
         return remove(ref(db, `AmbulanceForms/${OID}`));
     }
 
+    public async getAmbulanceForm(OID: string) {
+        const db = getDatabase();
+
+        return get(ref(db, `AmbulanceForms/${OID}`));
+    }
+
+    public async setAmbulanceForm(OID: string, form: AmbulanceForm) {
+        const db = getDatabase();
+
+        await set(ref(db, `AmbulanceForms/${OID}`), form);
+    }
+
     public async createHealthForm(UID: string, symptomsList: Array<string>) {
         const db = getDatabase();
         const healthForm = new HealthForm(UID, false, false, symptomsList);
-        const OID = healthForm.OID;
 
-        return set(ref(db, `HealthForms/${OID}`), healthForm);
+        return set(ref(db, `HealthForms/${UID}`), healthForm);
+    }
+
+    public async healthFormChatStarted(UID: string) {
+        const db = getDatabase();
+        
+        const healthForm = (await get(ref(db, `HealthForms/${UID}`))).val();
+        await remove(ref(db, `HealthForms/${UID}`));
+
+        return set(ref(db, `OngoingHealthForms/${UID}`), healthForm);
     }
 
     public async getAllHealthForms() {
         const db = getDatabase();
 
         return get(ref(db, `HealthForms`));
+    }
+
+    public async getAllOngoingHealthForms() {
+        const db = getDatabase();
+
+        return get(ref(db, `OngoingHealthForms`));
     }
 }

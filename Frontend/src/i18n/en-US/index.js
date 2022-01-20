@@ -180,5 +180,17 @@ export default {
   DormRoomNo: 'Dorm room no',
   AmbulaneCallDone: 'Your communication information is sent to Bilkent Health Center. You will be contacted by the health center staff shortly.',
   Symptoms: 'Patient\'s Symptoms',
-  HealthCenterChat: 'Health Center Chat'
+  HealthCenterChat: 'Health Center Chat',
+  EndChat: 'End The Chat',
+  EndChatQuestion: 'End the chat?',
+  End: 'END',
+  PatientName: 'Patient name',
+  NoNewHealthForm: 'There are no new health forms',
+  NoEmergency: 'Right now, there are no emergencies',
+  NoOngoingChats: 'Right now, there are no ongoing chats',
+  EmergencyDismissed: 'Emergency is dismissed',
+  Undo: 'Undo',
+  UndoSuccessful: 'Undo successful',
+  ChatEnded: 'Chat successfully ended',
+  HealthFormCreated: 'Patient form is successfully created'
 }

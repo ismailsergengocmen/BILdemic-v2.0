@@ -8,34 +8,53 @@
       </div>
     </div>
 
-    <q-btn 
-      round
-      class="q-mr-sm"
-      :icon="firstIcon"
-      :color="firstIconColor"
-      size="lg"
-      flat
-      dense
-      @click="firstClicked"
-    >
-      <q-tooltip self="center middle" :class="`bg-${firstIconColor}`">
-        {{ firstIconTooltip }}
-      </q-tooltip>
-    </q-btn>
+    <div class="column">
+      <q-btn 
+        v-if="hasFirstIcon"
+        round
+        class="q-mr-sm"
+        :icon="firstIcon"
+        :color="firstIconColor"
+        size="lg"
+        flat
+        dense
+        @click="firstClicked"
+      >
+        <q-tooltip self="center middle" :class="`bg-${firstIconColor}`">
+          {{ firstIconTooltip }}
+        </q-tooltip>
+      </q-btn>
+
+      <q-btn 
+        v-if="hasSecondIcon" 
+        round
+        class="q-mr-sm" 
+        :icon="secondIcon"
+        :color="secondIconColor"
+        size="lg"
+        flat
+        dense
+        @click="secondClicked"
+      >
+        <q-tooltip self="center middle" :class="`bg-${secondIconColor}`">
+          {{ secondIconTooltip }}
+        </q-tooltip>
+      </q-btn>
+    </div>
 
     <q-btn 
-      v-if="hasSecondIcon" 
+      v-if="hasDismiss" 
       round
       class="q-mr-sm" 
-      :icon="secondIcon"
-      :color="secondIconColor"
+      icon="mdi-close-circle-outline"
+      color="negative"
       size="lg"
       flat
       dense
-      @click="secondClicked"
+      @click="dismiss"
     >
-      <q-tooltip self="center middle" :class="`bg-${secondIconColor}`">
-        {{ secondIconTooltip }}
+      <q-tooltip self="center middle" class="bg-negative">
+        {{ $t('Dismiss') }}
       </q-tooltip>
     </q-btn>
   </div>
@@ -45,6 +64,7 @@
 export default {
   name: "GenericUserCard",
   props: {
+    hasFirstIcon: Boolean,
     firstIcon: String,
     firstIconColor: String,
     firstIconTooltip: String,
@@ -52,7 +72,8 @@ export default {
     secondIcon: String,
     secondIconColor: String,
     secondIconTooltip: String,
-    cardInfo: Object
+    cardInfo: Object,
+    hasDismiss: Boolean
   },
   setup(props, ctx) {
     const firstClicked = () => {
@@ -63,9 +84,14 @@ export default {
       ctx.emit('secondClicked', props.cardInfo)
     }
 
+    const dismiss = () => {
+      ctx.emit('dismiss', props.cardInfo)
+    }
+
     return {
       firstClicked,
-      secondClicked
+      secondClicked,
+      dismiss
     }
   },
 }

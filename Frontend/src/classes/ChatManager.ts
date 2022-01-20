@@ -1,4 +1,4 @@
-import { getDatabase, ref, push, set, get, query, orderByChild, equalTo, onValue } from "firebase/database";
+import { getDatabase, ref, set, get, remove } from "firebase/database";
 
 export default class ChatManager {
   
@@ -27,7 +27,19 @@ export default class ChatManager {
       timestamp: timestamp
     };
 
-    await set(ref(db, `Messages/${location}/${timestamp}`), message);
+    await set(ref(db, `HealthCenterChats/${location}/${timestamp}`), message);
   }
 
+  public async hasActiveChat(UID: string) {
+    const db = getDatabase();
+
+    return (await get(ref(db, `HealthCenterChats/${UID}`))).val() !== null;
+  }
+
+  public async endChat(UID: string) {
+    const db = getDatabase();
+
+    await remove(ref(db, `HealthCenterChats/${UID}`));
+    await remove(ref(db, `OngoingHealthForms/${UID}`));
+  }
 }

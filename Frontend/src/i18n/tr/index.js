@@ -180,5 +180,17 @@ export default {
   DormRoomNo: 'Yurt oda numarası',
   AmbulaneCallDone: 'İletişim bilgileriniz Bilkent Sağlık Merkezi\'ne iletilmiştir. Size en kısa sürede telefonunuzdan ulaşılacaktır.',
   Symptoms: 'Hastada Görülen Belirtiler',
-  HealthCenterChat: 'Sağlık Merkezi Sohbeti'
+  HealthCenterChat: 'Sağlık Merkezi Hasta Sohbeti',
+  EndChat: 'Sohbeti Bitir',
+  EndChatQuestion: 'Sohbeti bitir?',
+  End: 'BİTİR',
+  PatientName: 'Hasta ismi',
+  NoNewHealthForm: 'Yeni hasta formu bulunmamaktadır',
+  NoEmergency: 'Şuan acil bir durum bulunmamaktadır',
+  NoOngoingChats: 'Şuan devam eden bir görüşme bulunmamaktadır',
+  EmergencyDismissed: 'Acil durum kaldırıldı',
+  Undo: 'Geri al',
+  UndoSuccessful: 'Geri alma başarılı',
+  ChatEnded: 'Görüşme başarılı bir şekilde sonlandırıldı',
+  HealthFormCreated: 'Hasta formu başarılı bir şekilde gönderildi'
 }

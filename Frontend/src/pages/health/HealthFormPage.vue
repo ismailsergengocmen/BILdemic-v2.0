@@ -18,6 +18,7 @@ import HealthForm from '../../components/health/HealthForm.vue'
 import HealthManager from '../../classes/HealthManager'
 import { Store } from '../../store/index'
 import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: "HealthCenterPage",
@@ -28,6 +29,7 @@ export default {
     const $q = useQuasar();
     const hm = HealthManager.getInstance();
     const router = useRouter();
+    const { t } = useI18n({});
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -50,6 +52,11 @@ export default {
       const UID = Store.state.settings.currentUserUID;
       hm.createHealthForm(UID, selection).then(() => {
         router.push('/~/health');
+        $q.notify({
+          position: 'top',
+          message: t('HealthFormCreated'),
+          color: 'positive',
+        })
       });
     }
 

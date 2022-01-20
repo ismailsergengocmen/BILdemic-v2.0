@@ -1,11 +1,12 @@
 <template>
   <div>
-    <health-center-staff-tabs 
-      :cardInfos="cardInfos"
+    <health-center-staff-tabs
       :emergencyInfos="emergencies"
-      :ambulanceFormCount="ambulanceFormCount"
       :healthForms="healthForms"
+      :ongoingHealthForms="ongoingHealthForms"
       @dismiss="dismiss"
+      @startChat="startChat"
+      @goToChat="goToChat"
     />
 
     <q-page-sticky position="bottom-left" :offset="[18, 18]" v-if="isMobile">
@@ -26,6 +27,8 @@ import { useQuasar } from 'quasar'
 import HealthCenterStaffTabs from '../../components/health/HealthCenterStaffTabs.vue'
 import HealthManager from '../../classes/HealthManager'
 import UserManager from '../../classes/UserManager'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: "HealthCenterPage",
@@ -36,6 +39,8 @@ export default {
     const $q = useQuasar();
     const hm = HealthManager.getInstance();
     const um = UserManager.getInstance();
+    const router = useRouter();
+    const { t } = useI18n();
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -52,66 +57,14 @@ export default {
       ctx.emit('toggleDrawer');
     }
 
-    const cardInfos = [
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "Ahmed Salih Cezayir",
-          21802918,
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "Asude Cezayir",
-          21802918,
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "İsmail Sergen Göçmen",
-          21802918,
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "Ahmed Salih Cezayir",
-          21802918,
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "Asude Cezayir",
-          21802918,
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "İsmail Sergen Göçmen",
-          21802918,
-        ]
-      }
-    ];
-
     const fabPos = ref([ 18, 18 ]);
 
     const ambulanceForms = ref(null);
-    const ambulanceFormCount = computed(() => {
-      if (!ambulanceForms.value) {
-        return 0;
-      }
-      return Object.keys(ambulanceForms.value)?.length;
-    });
-
     const emergencies = ref([]);
 
     const fetchAmbulanceForms = async () => {
       hm.getAllAmbulanceForms().then((val) => {
-        emergencies.value = [];
+        const tmp = [];
         ambulanceForms.value = val.val();
         
         const forLoop = async _ => {
@@ -129,10 +82,10 @@ export default {
               uniqueID: ambulanceForms.value[key]._OID
             }
 
-            emergencies.value.push(emergency);
+            tmp.push(emergency);
           }
+          emergencies.value = tmp;
         }
-
         forLoop();
       })
     }
@@ -141,7 +94,7 @@ export default {
 
     const fetchHealthForms = async () => {
       hm.getAllHealthForms().then((val) => {
-        healthForms.value = [];
+        const tmp = [];
         const forms = val.val();
 
         const forLoop = async _ => {
@@ -157,16 +110,49 @@ export default {
                 formatTime(forms[key]._time, forms[key]._date)
               ],
               uniqueID: forms[key]._OID,
-              symptoms: forms[key]._symptomsList 
+              symptoms: forms[key]._symptomsList,
+              UID: UID
             }
 
-            healthForms.value.push(form);
+            tmp.push(form);
           }
+          healthForms.value = tmp;
         }
-
         forLoop();
+      }).catch((err) => {
+        console.log('err: ', err);
+      })
+    }
 
-        
+    const ongoingHealthForms = ref(null);
+
+    const fetchOngoingHealthForms = async () => {
+      hm.getAllOngoingHealthForms().then((val) => {
+        const tmp = [];
+        const forms = val.val();
+
+        const forLoop = async _ => {
+          for (let key in forms) {
+            const UID = forms[key]?._ownerUID;
+            const owner = (await um.getUserInfo(UID)).val();
+
+            const form = {
+              url: owner._profilePic,
+              data: [
+                owner._name, 
+                owner._ID,
+                formatTime(forms[key]._time, forms[key]._date)
+              ],
+              uniqueID: forms[key]._OID,
+              symptoms: forms[key]._symptomsList,
+              UID: UID
+            }
+
+            tmp.push(form);
+          }
+          ongoingHealthForms.value = tmp;
+        }
+        forLoop();
       }).catch((err) => {
         console.log('err: ', err);
       })
@@ -175,6 +161,7 @@ export default {
     onBeforeMount(async () => {
       await fetchAmbulanceForms();
       await fetchHealthForms();
+      await fetchOngoingHealthForms();
     })
 
     const formatPhoneNumber = (phone) => {
@@ -186,19 +173,50 @@ export default {
     }
 
     const dismiss = async (OID) => {
+      const ambulanceForm = (await hm.getAmbulanceForm(OID)).val();
+
       await hm.dismissAmbulanceForm(OID);
       await fetchAmbulanceForms();
+
+      $q.notify({
+        position: 'top',
+        message: t('EmergencyDismissed'),
+        color: 'positive',
+        actions: [
+          { label: t('Undo'), color: 'white', handler: async () => {
+            await hm.setAmbulanceForm(OID, ambulanceForm);
+            await fetchAmbulanceForms();
+
+            $q.notify({
+              position: 'top',
+              message: t('UndoSuccessful'),
+              color: 'positive',
+            });
+          }}
+        ],
+        progress: true,
+      });
+    }
+
+    const startChat = async (data) => {
+      router.push(`/~/health/chat/${data.UID}`);
+      await hm.healthFormChatStarted(data.UID);
+    }
+
+    const goToChat = (data) => {
+      router.push(`/~/health/chat/${data.UID}`);
     }
 
     return {
       toggleDrawer,
       isMobile,
-      cardInfos,
       fabPos,
-      ambulanceFormCount,
       emergencies,
       dismiss,
-      healthForms
+      healthForms,
+      startChat,
+      ongoingHealthForms,
+      goToChat
     }
   },
 }
