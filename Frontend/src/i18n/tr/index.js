@@ -194,5 +194,10 @@ export default {
   ChatEnded: 'Görüşme başarılı bir şekilde sonlandırıldı',
   HealthFormCreated: 'Hasta formu başarılı bir şekilde gönderildi',
   CourseEnrollSuccessful: 'Ders kayıt işlemi başarılı',
-  CourseCreationSuccessful: 'Başarılı bir şekilde ders oluşturuldu'
+  CourseCreationSuccessful: 'Başarılı bir şekilde ders oluşturuldu',
+  NoHealthCenterReservation: 'Sağlık merkezi randevunuz bulunmamaktadır. Randevu almak için lütfen sağlık merkezi ile iletişime geçiniz.',
+  AlreadyMadeAmbulanceCall: 'Hali hazırda bulunan ambulans çağrınız var. Lütfen sağlık merkezinin size geri dönmesini bekleyin',
+  AlreadyFilledHealthForm: 'Hasta formunu çoktan doldurdunuz. Sağlık merkezinin hasta görüşmesi açmasını bekleyiniz.',
+  GoToHealthForm: 'HASTA FORMUNA GİDİN',
+  GoToHealthCenterChat: 'SAĞLIK MERKEZİ GÖRÜŞMESİNE GİDİN'
 }

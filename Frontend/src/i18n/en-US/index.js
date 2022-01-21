@@ -194,5 +194,10 @@ export default {
   ChatEnded: 'Chat successfully ended',
   HealthFormCreated: 'Patient form is successfully created',
   CourseEnrollSuccessful: 'Successfully enrolled to the course',
-  CourseCreationSuccessful: 'Successfully created the course'
+  CourseCreationSuccessful: 'Successfully created the course',
+  NoHealthCenterReservation: 'You do not have any health center appointment. To make an appointment, please contact the health center.',
+  AlreadyMadeAmbulanceCall: 'You have already made an ambulance call. Please wait for health center staff to contact you',
+  AlreadyFilledHealthForm: 'You have already filled an health form. Please wait for health center staffs to open a patient chat.',
+  GoToHealthForm: 'Go to health form',
+  GoToHealthCenterChat: 'Go to health center chat'
 }

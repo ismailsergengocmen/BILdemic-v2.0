@@ -38,8 +38,10 @@ export default class ChatManager {
 
   public async endChat(UID: string) {
     const db = getDatabase();
+    const user = (await get(ref(db, `Users/${UID}`))).val();
 
     await remove(ref(db, `HealthCenterChats/${UID}`));
-    await remove(ref(db, `OngoingHealthForms/${UID}`));
+    await remove(ref(db, `OngoingHealthForms/${user.HealthForm._OID}`));
+    await remove(ref(db, `Users/${UID}/HealthForm`));
   }
 }

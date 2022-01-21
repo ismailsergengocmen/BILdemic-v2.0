@@ -79,7 +79,8 @@ export default {
                 formatPhoneNumber(ambulanceForms.value[key]._phoneNum),
                 formatTime(ambulanceForms.value[key]._time, ambulanceForms.value[key]._date)
               ],
-              uniqueID: ambulanceForms.value[key]._OID
+              uniqueID: ambulanceForms.value[key]._OID,
+              UID: UID
             }
 
             tmp.push(emergency);
@@ -172,10 +173,10 @@ export default {
       return date + " - " + time.substring(0, 5);
     }
 
-    const dismiss = async (OID) => {
-      const ambulanceForm = (await hm.getAmbulanceForm(OID)).val();
+    const dismiss = async (UID) => {
+      const ambulanceForm = (await hm.getAmbulanceForm(UID)).val();
 
-      await hm.dismissAmbulanceForm(OID);
+      await hm.dismissAmbulanceForm(ambulanceForm._ownerUID);
       await fetchAmbulanceForms();
 
       $q.notify({
@@ -184,7 +185,7 @@ export default {
         color: 'positive',
         actions: [
           { label: t('Undo'), color: 'white', handler: async () => {
-            await hm.setAmbulanceForm(OID, ambulanceForm);
+            await hm.setAmbulanceForm(ambulanceForm);
             await fetchAmbulanceForms();
 
             $q.notify({

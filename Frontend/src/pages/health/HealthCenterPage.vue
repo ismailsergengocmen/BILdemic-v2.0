@@ -11,7 +11,7 @@
         color="red" 
         style="width: 50%" 
         icon="mdi-ambulance" 
-        @click="show = true"
+        @click="call"
       />
     </div>  
 
@@ -21,12 +21,16 @@
       :title="$t('HealthCenterAppInfo')"
       class="q-mt-md" />
 
-    <div v-if="hasReservation" class="column items-center q-mt-md">
-      <q-btn :label="$t('ContactHealthCenter')" color="secondary" style="width: 50%" :to="contactRoute"/>
-    </div>  
+    <div v-else class="row justify-center q-mt-md">
+      <q-card outlined style="width: 50%;" class="q-pa-lg">
+          <div class="text-secondary text-weight-bold">
+            {{ $t("NoHealthCenterReservation") }}
+          </div>
+      </q-card>
+    </div>
 
-    <div v-else class="row justify-center">
-      <health-form class="q-mt-md"/>
+    <div class="column items-center q-mt-md">
+      <q-btn :label="contactButtonTitle" color="secondary" style="width: 50%" @click="goToContact"/>
     </div>
 
     <q-dialog v-model="show" persistent>
@@ -53,12 +57,13 @@ import HealthManager from '../../classes/HealthManager'
 import ChatManager from '../../classes/ChatManager'
 import { Store } from '../../store/index'
 import { useI18n } from 'vue-i18n'
+import UserManager from '../../classes/UserManager'
+import { useRouter } from 'vue-router'
 
 export default {
   name: "HealthCenterPage",
   components: {
-    MyReservations,
-    HealthForm
+    MyReservations
   },
   computed: {
     slots() {
@@ -83,7 +88,14 @@ export default {
     const $q = useQuasar();
     const hm = HealthManager.getInstance();
     const cm = ChatManager.getInstance();
+    const um = UserManager.getInstance();
+    const router = useRouter();
     const { t } = useI18n({});
+
+    const hasActiveChat = ref(null);
+    const hasReservation = ref(false);
+
+    const UID = Store.state.settings.currentUserUID;
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -96,14 +108,24 @@ export default {
       open.value = !isMobile.value;
     })
 
-    const hasReservation = ref(true);
-
     const toggleDrawer = () => {
       open.value = !open.value
       ctx.emit('toggleDrawer');
     }
 
-    const UID = Store.state.settings.currentUserUID;
+    const call = async () => {
+      const user = (await um.getUserInfo(UID)).val();
+      if (!user.AmbulanceForm) {
+        show.value = true;
+      }
+      else {
+        $q.notify({
+          position: 'top',
+          message: t('AlreadyMadeAmbulanceCall'),
+          color: 'negative',
+        })
+      }
+    }
 
     const callAmbulance = () => {
       hm.makeAmbulanceCall(UID).then(() => {
@@ -115,15 +137,35 @@ export default {
       });
     }
 
-    const hasActiveChat = ref(null);
-
     onBeforeMount(async () => {
       hasActiveChat.value = await cm.hasActiveChat(UID);
     })
 
-    const contactRoute = computed(() => {
-      return hasActiveChat.value ? `/~/health/chat/${UID}` : '/~/health/form';
-    })
+    const goToContact = async () => {
+      const user = (await um.getUserInfo(UID)).val();
+      if (!user.HealthForm) {
+        router.push('/~/health/form');
+      }
+      else if (hasActiveChat.value){
+        router.push(`/~/health/chat/${UID}`);
+      }
+      else {
+        $q.notify({
+          position: 'top',
+          color: 'negative',
+          message: t('AlreadyFilledHealthForm')
+        });
+      }
+    }
+
+    const contactButtonTitle = computed(() => {
+      if (hasActiveChat.value){
+        return t('GoToHealthCenterChat');
+      }
+      else {
+        return t('GoToHealthForm');
+      }
+    });
 
     return {
       toggleDrawer,
@@ -132,7 +174,9 @@ export default {
       show,
       callAmbulance,
       hasActiveChat,
-      contactRoute
+      call,
+      goToContact,
+      contactButtonTitle
     }
   },
 }

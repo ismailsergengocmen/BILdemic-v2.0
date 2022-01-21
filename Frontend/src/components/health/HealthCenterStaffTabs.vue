@@ -120,7 +120,7 @@
                 <div v-if="noOngoingChats" class="row justify-center q-mt-lg">
                   <q-card outlined style="width: 50%;" class="q-pa-lg">
                       <div class="text-secondary text-weight-bold">
-                        {{ $t("NoNewHealthForm") }}
+                        {{ $t("NoOngoingChats") }}
                       </div>
                   </q-card>
                 </div>
@@ -221,7 +221,7 @@ export default {
     })
 
     const dismiss = (data) => {
-      ctx.emit('dismiss', data.uniqueID);
+      ctx.emit('dismiss', data.UID);
     }
 
     const showFormForNew = (data) => {
