@@ -1,20 +1,24 @@
 <template>
   <div>
     <div class="column q-gutter-y-md">
-      <q-field 
-        outlined 
-        :label="$t('FullName')" 
-        stack-label 
-        class="col" 
-        dense 
-        color="secondary"
-      >
-        <template v-slot:control>
-          <div class="self-center full-width no-outline"> 
-            {{ name }} 
-          </div>
-        </template>
-      </q-field>
+      <div class="row q-gutter-x-md">
+        <q-field 
+          outlined 
+          :label="$t('FullName')" 
+          stack-label 
+          class="col" 
+          dense 
+          color="secondary"
+        >
+          <template v-slot:control>
+            <div class="self-center full-width no-outline"> 
+              {{ name }} 
+            </div>
+          </template>
+        </q-field>
+        
+        <language-switcher/>
+      </div>
 
       <q-field 
         outlined 
@@ -177,11 +181,15 @@ import UserManager from "../classes/UserManager"
 import SettingsManager from "../classes/SettingsManager"
 import { Store } from "../store/index.js"
 import { onBeforeMount, ref } from "vue"
-import { useI18n } from 'vue-i18n'
-import { useQuasar } from 'quasar'
+import { useI18n } from "vue-i18n"
+import { useQuasar } from "quasar"
+import LanguageSwitcher from "./LanguageSwitcher.vue"
 
 export default {
   name: "ProfilePageForm",
+  components: {
+    LanguageSwitcher
+  },
   setup() {
     const um = UserManager.getInstance();
     const sm = SettingsManager.getInstance();

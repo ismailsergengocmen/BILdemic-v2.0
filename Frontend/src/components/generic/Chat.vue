@@ -94,6 +94,7 @@ export default {
     const router = useRouter();
     const $q = useQuasar();
     const { t } = useI18n({});
+    const { locale } = useI18n({ useScope: 'global' });
 
     const newMessage = ref(null);
     const messages = ref(null);
@@ -139,6 +140,7 @@ export default {
     }
 
     const formattedTime = (time) => {
+      moment.locale(locale.value?.slice(0,2));
       return moment(time).format('lll');
     }
 
