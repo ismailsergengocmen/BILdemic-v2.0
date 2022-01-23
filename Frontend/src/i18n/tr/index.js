@@ -106,7 +106,7 @@ export default {
   RegionalDist: 'Bölge Bazında Yemek Dağılım',
   IndividualDist: 'Birey Bazında Yemek Dağılımı',
   Normal: 'Normal',
-  Vegeterian: 'Vejeteryan',
+  Vegetarian: 'Vejeteryan',
   Vegan: 'Vegan',
   MenuBasedDesc: 'Menü bazında yemek şipariş dağılımı aşağıdaki gibidir',
   MealIsTaken: 'Yemek alındı',
@@ -178,5 +178,8 @@ export default {
   SelectNewProfilePhoto: 'Yeni profil resmi seçmek için tıklayın',
   PhotoUploadSuccessful: 'Profil resmi başarıyla güncellendi.',
   DormRoomNo: 'Yurt oda numarası',
-  MealType: 'Yemek menü tipi'
+  MealType: 'Yemek menü tipi',
+  DORM78: '78. yurt',
+  DORM51: '51. yurt',
+  DORM90: '90. yurt'
 }

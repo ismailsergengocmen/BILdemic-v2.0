@@ -236,43 +236,51 @@ export default class CafeteriaManager {
 
   /**
    * To be used in menu based distribution tab
-   * Calculate total order count with specified type
-   * @param type, represent order type which will be calculated 
-   * @param totalType, holds total order count 
+   * Calculates all orders counts
    */
-  public async calculateTotalOrder(type:string){
+  public async calculateTotalOrder(){
     const db = getDatabase();
-    let type90,type78,type51;
 
-    if(type == "normal"){
-      type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Normal90`))).val();
-      type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Normal78`))).val();
-      type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Normal51`))).val();
-    }
+    const orders = {
+      normal: {
+        type90: "",
+        type78: "",
+        type51: "",
+      },
+      vegetarian: {
+        type90: "",
+        type78: "",
+        type51: "",
+      },
+      vegan: {
+        type90: "",
+        type78: "",
+        type51: "",
+      },
+      total: {
+        type90: "",
+        type78: "",
+        type51: "",
+      }
+    };
 
-    else if(type == "vegeterian"){
-      type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90`))).val();
-      type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78`))).val();
-      type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51`))).val();
-    }
+    orders.normal.type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Normal90`))).val();
+    orders.normal.type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Normal78`))).val();
+    orders.normal.type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Normal51`))).val();
 
-    else if(type == "vegan"){
-      type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90`))).val();
-      type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78`))).val();
-      type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51`))).val();
-    }
-
-    else{
-      type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Total90`))).val();
-      type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Total78`))).val();
-      type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Total51`))).val();
-    }
+    orders.vegetarian.type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90`))).val();
+    orders.vegetarian.type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78`))).val();
+    orders.vegetarian.type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51`))).val();
     
-    return {
-      type90: type90,
-      type78: type78,
-      type51: type51
-    }
+    orders.vegan.type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90`))).val();
+    orders.vegan.type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78`))).val();
+    orders.vegan.type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51`))).val();
+    
+    orders.total.type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Total90`))).val();
+    orders.total.type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Total78`))).val();
+    orders.total.type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Total51`))).val();
+    
+    return orders;
   }
 
   /**
@@ -283,5 +291,14 @@ export default class CafeteriaManager {
   public async searchOrder(takerID:number){
     const db = getDatabase();
     return (await get(ref(db, `Users/${takerID}/_orders/Meal/`))).val();
+  }
+
+  /**
+   * To get all meal orders
+   */
+  public async getAllMealOrders() {
+    const db = getDatabase();
+
+    return (await get(ref(db, `PendingMealOrders/Orders`))).val();
   }
 }

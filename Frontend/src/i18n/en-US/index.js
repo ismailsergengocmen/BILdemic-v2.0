@@ -106,7 +106,7 @@ export default {
   RegionalDist: 'Regional Food Distribution',
   IndividualDist: 'Individual Food Distribution',
   Normal: 'Normal',
-  Vegeterian: 'Vegetarian',
+  Vegetarian: 'Vegetarian',
   Vegan: 'Vegan',
   MenuBasedDesc: 'This is the food order distribution based on the menu type',
   MealIsTaken: 'Meal is taken',
@@ -178,5 +178,8 @@ export default {
   SelectNewProfilePhoto: 'Click to select new profile photo',
   PhotoUploadSuccessful: 'Your profile photo successfully updated.',
   DormRoomNo: 'Dorm room no',
-  MealType: 'Meal type'
+  MealType: 'Meal type',
+  DORM78: 'Dorm 78',
+  DORM51: 'Dorm 51',
+  DORM90: 'Dorm 90'
 }

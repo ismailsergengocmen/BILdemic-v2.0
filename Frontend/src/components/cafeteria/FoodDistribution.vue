@@ -74,7 +74,7 @@
             <div class="column q-gutter-y-md full-width items-center">
               <q-input
                 v-model="search"
-                debounce="1000"
+                debounce="700"
                 filled
                 :placeholder="$t('Search')"
                 color="secondary"
@@ -86,7 +86,7 @@
               </q-input>
 
               <generic-user-card 
-                v-for="info in cardInfos" 
+                v-for="info in filteredCardInfos" 
                 :key="info"  
                 :cardInfo="info"
                 :buttonText="$t('MealIsTaken')"
@@ -102,7 +102,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import GenericUserCard from '../generic/GenericUserCard.vue'
 
 export default {
@@ -114,10 +114,25 @@ export default {
     regionInfo: Array,
     menuInfo: Array
   },
-  setup() {
+  setup(props) {
+    const tab = ref('menu');
+    const search = ref(null);
+
+    const filteredCardInfos = computed(() => {
+      const filtered = props.cardInfos;
+
+      if (search.value) {
+        return filtered?.filter((element) => {
+          return element.data[0].toLowerCase().includes(search.value.toLowerCase());
+        });
+      }
+      return filtered;
+    })
+
     return {
-      tab: ref('menu'),
-      search: ref()
+      tab, 
+      search,
+      filteredCardInfos
     }
   },
 }
