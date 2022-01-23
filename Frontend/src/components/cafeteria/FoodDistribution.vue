@@ -118,7 +118,7 @@ export default {
     regionInfo: Array,
     menuInfo: Array
   },
-  setup(props) {
+  setup(props, ctx) {
     const tab = ref('menu');
     const search = ref(null);
 
@@ -134,7 +134,10 @@ export default {
     })
 
     const mealIsTaken = async (data) => {
-
+      ctx.emit('mealIsTaken', {
+        UID: data.owner,
+        OID: data.uniqueId
+      });
     }
 
     return {

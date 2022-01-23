@@ -4,6 +4,7 @@
       :cardInfos="individualInfo"
       :regionInfo="regionalInfo"
       :menuInfo="menuBasedInfo"
+      @mealIsTaken="mealIsTaken"  
     />
 
     <q-page-sticky position="bottom-left" :offset="fabPos" v-if="isMobile">
@@ -165,6 +166,17 @@ export default {
       ]
     }
 
+    const mealIsTaken = async (data) => {
+      cm.deleteMealOrder(data.UID, data.OID).then(async () => {
+        $q.notify({
+          position: 'top',
+          color: 'positive',
+          message: t('MealIsTaken')
+        });
+        await initializeMealDistributionInfos();
+      });
+    }
+
     onBeforeMount(async () => {
       await initializeMealDistributionInfos();
     })
@@ -175,7 +187,8 @@ export default {
       fabPos,
       menuBasedInfo,
       regionalInfo,
-      individualInfo
+      individualInfo,
+      mealIsTaken
     }
   },
 }

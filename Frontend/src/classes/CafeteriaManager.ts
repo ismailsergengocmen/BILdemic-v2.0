@@ -153,9 +153,9 @@ export default class CafeteriaManager {
     }
 
     else if(place == "51"){
-      val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/`))).val();
+      val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Total51/`))).val();
       val = val - 1;
-      await set(ref(db, `PendingMealOrders/Regional/Counter51/`), val);
+      await set(ref(db, `PendingMealOrders/Regional/Counter51/Total51/`), val);
 
       if(meal._mealType == MealType.NORMAL){
         val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`))).val();
