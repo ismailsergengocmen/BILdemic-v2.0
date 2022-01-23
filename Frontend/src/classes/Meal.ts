@@ -19,14 +19,16 @@ export default class Meal extends Order{
     // Constructors
     public constructor(place:string,  date:string, time:string, ownerUID:string, type:string){
         super(place, date, time, ownerUID, "Meal");
-        
-        if(type == "normal"){
+        this._type = type;
+        this._taken = false;
+
+        if(type == "Normal"){
             this._mealType = MealType.NORMAL;
         }
-        else if(type == "HealthForm"){
+        else if(type == "Vegetarian"){
             this._mealType = MealType.VEGETARIAN;
         }
-        else if(type == "Meal"){
+        else if(type == "Vegan"){
             this._mealType = MealType.VEGAN;
         }
     }

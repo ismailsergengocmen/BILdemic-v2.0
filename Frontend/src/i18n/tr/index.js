@@ -177,5 +177,6 @@ export default {
   UpdateProfilePicture: 'Profil Resmini Güncelle',
   SelectNewProfilePhoto: 'Yeni profil resmi seçmek için tıklayın',
   PhotoUploadSuccessful: 'Profil resmi başarıyla güncellendi.',
-  DormRoomNo: 'Yurt oda numarası'
+  DormRoomNo: 'Yurt oda numarası',
+  MealType: 'Yemek menü tipi'
 }

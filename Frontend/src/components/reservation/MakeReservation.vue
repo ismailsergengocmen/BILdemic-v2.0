@@ -102,7 +102,7 @@ export default {
     ];
 
     const placeArr = [
-      "Main Campus Sports Hall", "East Campus Sports Hall", "Dormitories Sports Hall"
+      "78", "51", "90"
     ];
 
     const activityArr = [

@@ -8,7 +8,6 @@ export default class CafeteriaManager {
   
   //Properties
   private static instance: CafeteriaManager | null = null;
-  private static isBuild: boolean = false;
 
   //Constructor
   private constructor() {}
@@ -31,91 +30,90 @@ export default class CafeteriaManager {
   public async createMealOrder(place: string, date: string, time: string, type: string){
     const ownerUID = getAuth().currentUser?.uid || ' ';
     const db = getDatabase();
-    let meal = new Meal(place, time, date, ownerUID, type);
+    let meal = new Meal(place, date, time, ownerUID, type);
     let val;
 
-    if(!CafeteriaManager.isBuild){
-      this.buildMealBranch();
-      CafeteriaManager.isBuild = true
+    const isBuild = (await get(ref(db, `PendingMealOrders/isBuild`))).val();
+
+    if(!isBuild){
+      await this.buildMealBranch();
+      await (set(ref(db, `PendingMealOrders/isBuild`), true));
     }
 
-    else{
-      if(place == "78"){
-        val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Total78/`))).val();
+    if(place == "78"){
+      val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Total78/`))).val();
+      val = val + 1;
+      await set(ref(db, `PendingMealOrders/Regional/Counter78/Total78/`), val);
+
+      if(meal.mealType == MealType.NORMAL){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Normal78/`))).val();
         val = val + 1;
-        await set(ref(db, `PendingMealOrders/Regional/Counter78/Total78/`), val);
-
-        if(meal.mealType == MealType.NORMAL){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Normal78/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter78/Normal78/`), val);
-        }
-
-        else if(meal.mealType == MealType.VEGETARIAN){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78/`), val);
-        }
-
-        else{
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78/`), val);
-        }
+        await set(ref(db, `PendingMealOrders/Regional/Counter78/Normal78/`), val);
       }
 
-      else if(place == "51"){
-        val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/`))).val();
+      else if(meal.mealType == MealType.VEGETARIAN){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78/`))).val();
         val = val + 1;
-        await set(ref(db, `PendingMealOrders/Regional/Counter51/`), val);
-      
-        if(meal.mealType == MealType.NORMAL){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`), val);
-        }
-
-        else if(meal.mealType == MealType.VEGETARIAN){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51/`), val);
-        }
-
-        else{
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51/`), val);
-        }
+        await set(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78/`), val);
       }
 
       else{
-        val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Total90/`))).val();
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78/`))).val();
         val = val + 1;
-        await set(ref(db, `PendingMealOrders/Regional/Counter90/Total90/`), val);
+        await set(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78/`), val);
+      }
+    }
 
-        if(meal.mealType == MealType.NORMAL){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Normal90/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter90/Normal90/`), val);
-        }
-
-        else if(meal.mealType == MealType.VEGETARIAN){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90/`), val);
-        }
-
-        else{
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90/`))).val();
-          val = val + 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90/`), val);
-        }
+    else if(place == "51"){
+      val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Total51/`))).val();
+      val = val + 1;
+      await set(ref(db, `PendingMealOrders/Regional/Counter51/Total51/`), val);
+      
+      if(meal.mealType == MealType.NORMAL){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`))).val();
+        val = val + 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`), val);
       }
 
-      await set(ref(db, `Users/${ownerUID}/Orders/${meal._OID}`), meal);
-      await set(ref(db, `PendingMealOrders/Orders/${meal._OID}`), meal);
-      return true;
+      else if(meal.mealType == MealType.VEGETARIAN){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51/`))).val();
+        val = val + 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51/`), val);
+      }
+
+      else{
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51/`))).val();
+        val = val + 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51/`), val);
+      }
     }
+
+    else{
+      val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Total90/`))).val();
+      val = val + 1;
+      await set(ref(db, `PendingMealOrders/Regional/Counter90/Total90/`), val);
+
+      if(meal.mealType == MealType.NORMAL){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Normal90/`))).val();
+        val = val + 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter90/Normal90/`), val);
+      }
+
+      else if(meal.mealType == MealType.VEGETARIAN){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90/`))).val();
+        val = val + 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90/`), val);
+      }
+
+      else{
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90/`))).val();
+        val = val + 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90/`), val);
+      }
+    }
+
+    await set(ref(db, `Users/${ownerUID}/_orders/Meal`), meal);
+    await set(ref(db, `PendingMealOrders/Orders/${meal._OID}`), meal);
   }
 
   /**
@@ -127,85 +125,84 @@ export default class CafeteriaManager {
     const db = getDatabase();
     let val;
     
-    let meal = (await get(ref(db, `Users/${UID}/_orders/Sports/${OID}`))).val();
-    let place = meal.place();
+    let meal = (await get(ref(db, `Users/${UID}/_orders/Meal/`))).val();
+    let place = meal._place;
 
-      if(place == "78"){
-        val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Total78`))).val();
+    if(place == "78"){
+      val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Total78`))).val();
+      val = val - 1;
+      await set(ref(db, `PendingMealOrders/Regional/Counter78/Total78/`), val);
+
+      if(meal._mealType == MealType.NORMAL){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Normal78/`))).val();
         val = val - 1;
-        await set(ref(db, `PendingMealOrders/Regional/Counter78/Total78/`), val);
-
-        if(meal.mealType == MealType.NORMAL){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Normal78/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter78/Normal78/`), val);
-        }
-
-        else if(meal.mealType == MealType.VEGETARIAN){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78/`), val);
-        }
-
-        else{
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78/`), val);
-        }
+        await set(ref(db, `PendingMealOrders/Regional/Counter78/Normal78/`), val);
       }
 
-      else if(place == "51"){
-        val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/`))).val();
+      else if(meal._mealType == MealType.VEGETARIAN){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78/`))).val();
         val = val - 1;
-        await set(ref(db, `PendingMealOrders/Regional/Counter51/`), val);
-      
-        if(meal.mealType == MealType.NORMAL){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`), val);
-        }
-
-        else if(meal.mealType == MealType.VEGETARIAN){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51/`), val);
-        }
-
-        else{
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51/`), val);
-        }
+        await set(ref(db, `PendingMealOrders/Regional/Counter78/Vegetarian78/`), val);
       }
 
       else{
-        val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Total90/`))).val();
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78/`))).val();
         val = val - 1;
-        await set(ref(db, `PendingMealOrders/Regional/Counter90/Total90/`), val);
+        await set(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78/`), val);
+      }
+    }
 
-        if(meal.mealType == MealType.NORMAL){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Normal90/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter90/Normal90/`), val);
-        }
+    else if(place == "51"){
+      val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/`))).val();
+      val = val - 1;
+      await set(ref(db, `PendingMealOrders/Regional/Counter51/`), val);
 
-        else if(meal.mealType == MealType.VEGETARIAN){
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90/`), val);
-        }
-
-        else{
-          val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90/`))).val();
-          val = val - 1;
-          await set(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90/`), val);
-        }
+      if(meal._mealType == MealType.NORMAL){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`))).val();
+        val = val - 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter51/Normal51/`), val);
       }
 
-      await remove(ref(db, `Users/${UID}/_orders/Meals/${OID}`));
-      await remove(ref(db, `PendingMealOrders/Orders/${OID}`));
-      return true;
+      else if(meal._mealType == MealType.VEGETARIAN){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51/`))).val();
+        val = val - 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter51/Vegetarian51/`), val);
+      }
+
+      else{
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51/`))).val();
+        val = val - 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51/`), val);
+      }
     }
+
+    else{
+      val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Total90/`))).val();
+      val = val - 1;
+      await set(ref(db, `PendingMealOrders/Regional/Counter90/Total90/`), val);
+
+      if(meal._mealType == MealType.NORMAL){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Normal90/`))).val();
+        val = val - 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter90/Normal90/`), val);
+      }
+
+      else if(meal._mealType == MealType.VEGETARIAN){
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90/`))).val();
+        val = val - 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter90/Vegetarian90/`), val);
+      }
+
+      else{
+        val = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90/`))).val();
+        val = val - 1;
+        await set(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90/`), val);
+      }
+    }
+
+    await remove(ref(db, `Users/${UID}/_orders/Meal`));
+    await remove(ref(db, `PendingMealOrders/Orders/${OID}`));
+  }
 
   /**
    * Created meal branch and fill counters with 0
@@ -233,10 +230,8 @@ export default class CafeteriaManager {
   public async changeTakenStatus(UID:string, OID: string){
     const db = getDatabase();
 
-    let order = (await get(ref(db, `Users/${UID}/Orders/Meal/`))).val();
-    await set(ref(db, `Users/${UID}/Orders/${OID}/${order._taken}`), true);
-    await set(ref(db, `PendingMealOrders/Orders/${OID}/${order._taken}`), true);
-    return true;
+    await set(ref(db, `Users/${UID}/_orders/Meal/_taken`), true);
+    await set(ref(db, `PendingMealOrders/Orders/${OID}/_taken`), true);
   }
 
   /**
@@ -245,7 +240,7 @@ export default class CafeteriaManager {
    * @param type, represent order type which will be calculated 
    * @param totalType, holds total order count 
    */
-  public async calculateTotalOrder(type:string, totalType: number){
+  public async calculateTotalOrder(type:string){
     const db = getDatabase();
     let type90,type78,type51;
 
@@ -262,9 +257,9 @@ export default class CafeteriaManager {
     }
 
     else if(type == "vegan"){
-      type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Normal90`))).val();
-      type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Normal78`))).val();
-      type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Normal51`))).val();
+      type90 = (await get(ref(db, `PendingMealOrders/Regional/Counter90/Vegan90`))).val();
+      type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Vegan78`))).val();
+      type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Vegan51`))).val();
     }
 
     else{
@@ -272,7 +267,12 @@ export default class CafeteriaManager {
       type78 = (await get(ref(db, `PendingMealOrders/Regional/Counter78/Total78`))).val();
       type51 = (await get(ref(db, `PendingMealOrders/Regional/Counter51/Total51`))).val();
     }
-    totalType = type51 + type78 + type90;
+    
+    return {
+      type90: type90,
+      type78: type78,
+      type51: type51
+    }
   }
 
   /**
@@ -280,8 +280,8 @@ export default class CafeteriaManager {
    * @param takerID 
    * @param meal 
    */
-  public async searchOrder(takerID:number,meal:Meal){
+  public async searchOrder(takerID:number){
     const db = getDatabase();
-    meal = (await get(ref(db, `Users/${takerID}/Orders/Meal/`))).val();
+    return (await get(ref(db, `Users/${takerID}/_orders/Meal/`))).val();
   }
 }

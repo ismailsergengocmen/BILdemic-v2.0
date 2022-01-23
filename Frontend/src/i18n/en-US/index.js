@@ -177,5 +177,6 @@ export default {
   UpdateProfilePicture: 'Update Your Profile Photo',
   SelectNewProfilePhoto: 'Click to select new profile photo',
   PhotoUploadSuccessful: 'Your profile photo successfully updated.',
-  DormRoomNo: 'Dorm room no'
+  DormRoomNo: 'Dorm room no',
+  MealType: 'Meal type'
 }

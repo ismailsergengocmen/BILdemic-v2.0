@@ -9,9 +9,11 @@
 
     <my-reservations 
       v-if="hasReservation" 
-      :slots="slots" 
+      :slots="mealOrder" 
       :title="$t('MealOrderInfo')"
-      class="q-mt-md" />
+      class="q-mt-md" 
+      @cancelReservations="cancelReservation"
+    />
       
     <make-reservation 
       v-if="!hasReservation" 
@@ -21,18 +23,21 @@
       :hasDate="true"
       :title="$t('MakeMealOrder')" 
       type="meal"
-      class="q-mt-md" @makeReservation="makeRes"/>
+      class="q-mt-md" @makeReservation="makeRes" 
+    />
 
   </div>
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onBeforeMount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useQuasar } from 'quasar'
 import MakeReservation from '../../components/reservation/MakeReservation.vue'
 import MyReservations from '../../components/reservation/MyReservations.vue'
 import DailyMenu from '../../components/cafeteria/DailyMenu.vue'
 import CafeteriaManager from '../../classes/CafeteriaManager'
+import { Store } from '../../store/index'
 
 export default {
   name: "CafeteriaPage",
@@ -41,27 +46,15 @@ export default {
     MyReservations,
     DailyMenu
   },
-  computed: {
-    slots() {
-      return [
-        {
-          label: this.$t('ReservationDate'), 
-          data:  '11/12/2021'
-        },
-        {
-          label: this.$t('ReservationTime'), 
-          data:  '08.30'
-        },
-        {
-          label: this.$t('ReservationPlace'), 
-          data:  'Health Center'
-        }
-      ]
-    }
-  },
 
   setup(props, ctx) {
     const $q = useQuasar();
+    const { t } = useI18n({});
+    const cm = CafeteriaManager.getInstance();
+
+    const hasReservation = ref(false);
+    const mealOrder = ref(null);
+    const UID = Store.state.settings.currentUserUID;
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -73,9 +66,6 @@ export default {
       open.value = !isMobile.value;
     })
 
-    const hasReservation = ref(false);
-    const cm = CafeteriaManager.getInstance();
-
     const toggleDrawer = () => {
       open.value = !open.value
       ctx.emit('toggleDrawer');
@@ -83,13 +73,63 @@ export default {
 
     const makeRes = async (val) => {
       await cm.createMealOrder(val.place, val.date, val.time, val.meal);
+      await fetchMealOrder();
     }
+
+    const cancelReservation = async (OID) => {
+      cm.deleteMealOrder(UID, OID).then(() => {
+        // TO DO TO DO TO DO AAAAAAAAA
+        // $q.notify({
+        //   position: 'top',  
+        // });
+        fetchMealOrder();
+      });
+    }
+
+    const fetchMealOrder = async () => {
+      cm.searchOrder(UID).then((orderData) => {
+        if (orderData) {
+          hasReservation.value = true;
+          mealOrder.value = [
+            {
+              label: t('ReservationDate'), 
+              data: orderData._date
+            },
+            {
+              label: t('ReservationTime'), 
+              data:  orderData._time
+            },
+            {
+              label: t('ReservationPlace'), 
+              data:  orderData._place
+            },
+            {
+              label: t('MealType'), 
+              data:  orderData._type
+            },
+            {
+              label: "OID", 
+              data:  orderData._OID
+            }
+          ];
+        }
+        else {
+          hasReservation.value = false;
+        }
+      })
+    }
+
+    onBeforeMount(async () => {
+      await fetchMealOrder();
+    })
 
     return {
       toggleDrawer,
       isMobile,
       hasReservation,
-      makeRes
+      makeRes,
+      mealOrder,
+      cancelReservation
     }
   },
 }
