@@ -4,9 +4,12 @@ import User from './User'
 export default class AmbulanceForm extends Order {
   private _phoneNum: number;
 
-  public constructor(place: string, time: string, date: string, owner: string, phoneNumber: number, OID:string) {
-    super(place, time, date, owner, "AmbulanceForm");
+  public constructor(place: string, UID: string, phoneNumber: number) {
+    const DATE = new Date();
+    const time = DATE.toLocaleDateString("tr-TR");
+    const date = DATE.toLocaleTimeString("tr-TR");
 
+    super(place, time, date, UID, "AmbulanceForm");
     this._phoneNum = phoneNumber;
   }
 

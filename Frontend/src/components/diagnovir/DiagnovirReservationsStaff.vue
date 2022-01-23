@@ -23,7 +23,9 @@
           v-for="info in cardInfos" 
           :key="info"  
           :cardInfo="info"
-          :buttonText="$t('EnterTestResult')"
+          firstIcon="mdi-needle"
+          :firstIconTooltip="$t('EnterTestResult')"
+          firstIconColor="indigo-6"
           @button1Clicked="showPopup"
           class="text-black"
         />

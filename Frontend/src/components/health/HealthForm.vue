@@ -11,67 +11,78 @@
       color="secondary"
     />
 
-    <q-btn color="secondary" label="Submit" style="width: 50%" class="q-mt-md q-ml-sm"/>
+    <q-btn 
+      color="secondary" 
+      :label="$t('Submit')" 
+      style="width: 50%" 
+      class="q-mt-md q-ml-sm"
+      @click="submit"
+    />
   </div>
 </div>
 </template>
 
 <script>
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: "HealtForm",
-  computed: {
-    symptoms() {
-      return [
-        {
-          label: this.$t('Fever'),
-          value: 'fever'
-        }, 
-        {
-          label: this.$t('Cough'),
-          value: 'cough'
-        }, 
-        {
-          label: this.$t('Tiredness'),
-          value: 'tiredness'
-        }, 
-        {
-          label: this.$t('LossOfTaste'),
-          value: 'lossOfTaste'
-        }, 
-        {
-          label: this.$t('SoreThroat'),
-          value: 'soreThroat'
-        }, 
-        {
-          label: this.$t('Headache'),
-          value: 'headache'
-        }, 
-        {
-          label: this.$t('Diarrhea'),
-          value: 'diarrhea'
-        },
-        {
-          label: this.$t('DifficultyBreathing'),
-          value: 'difficultyBreathing'
-        },
-        {
-          label: this.$t('LossOfSpeech'),
-          value: 'lossOfSpeech'
-        },
-        {
-          label: this.$t('ChestPain'),
-          value: 'chestPain'
-        },
-      ]
-    }
-  },
-  setup() {
+  setup(props, ctx) {
+    const { t } = useI18n({});   
+
     const selection = ref([]);
+    const symptoms = [
+      {
+        label: t('Fever'),
+        value: 'fever'
+      }, 
+      {
+        label: t('Cough'),
+        value: 'cough'
+      }, 
+      {
+        label: t('Tiredness'),
+        value: 'tiredness'
+      }, 
+      {
+        label: t('LossOfTaste'),
+        value: 'lossOfTaste'
+      }, 
+      {
+        label: t('SoreThroat'),
+        value: 'soreThroat'
+      }, 
+      {
+        label: t('Headache'),
+        value: 'headache'
+      }, 
+      {
+        label: t('Diarrhea'),
+        value: 'diarrhea'
+      },
+      {
+        label: t('DifficultyBreathing'),
+        value: 'difficultyBreathing'
+      },
+      {
+        label: t('LossOfSpeech'),
+        value: 'lossOfSpeech'
+      },
+      {
+        label: t('ChestPain'),
+        value: 'chestPain'
+      },
+    ];
+
+    const submit = async () => {
+      ctx.emit('submit', selection.value);
+    }
 
     return {
-      selection
+      selection,
+      symptoms,
+      submit
     }
   },
 }

@@ -89,7 +89,9 @@
                 v-for="info in filteredCardInfos" 
                 :key="info"  
                 :cardInfo="info"
-                :buttonText="$t('MealIsTaken')"
+                :firstIconTooltip="$t('MealIsTaken')"
+                firstIconColor="positive"
+                firstIcon="mdi-checkbox-marked-circle-outline"
                 class="text-black"
               />
             </div>

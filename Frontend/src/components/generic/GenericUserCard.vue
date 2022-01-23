@@ -7,17 +7,56 @@
         {{ i }}
       </div>
     </div>
+
+    <div class="column">
+      <q-btn 
+        v-if="hasFirstIcon"
+        round
+        class="q-mr-sm"
+        :icon="firstIcon"
+        :color="firstIconColor"
+        size="lg"
+        flat
+        dense
+        @click="firstClicked"
+      >
+        <q-tooltip self="center middle" :class="`bg-${firstIconColor}`">
+          {{ firstIconTooltip }}
+        </q-tooltip>
+      </q-btn>
+
+      <q-btn 
+        v-if="hasSecondIcon" 
+        round
+        class="q-mr-sm" 
+        :icon="secondIcon"
+        :color="secondIconColor"
+        size="lg"
+        flat
+        dense
+        @click="secondClicked"
+      >
+        <q-tooltip self="center middle" :class="`bg-${secondIconColor}`">
+          {{ secondIconTooltip }}
+        </q-tooltip>
+      </q-btn>
+    </div>
+
     <q-btn 
-      :label="buttonText" 
-      class="q-mr-md" 
-      color="secondary" 
-      @click="button1Clicked" />
-    <q-btn 
-      v-if="hasSecondButton" 
-      :label="secondButtonText" 
-      class="q-mr-md" 
-      color="secondary" 
-      @click="button2Clicked"/>
+      v-if="hasDismiss" 
+      round
+      class="q-mr-sm" 
+      icon="mdi-close-circle-outline"
+      color="negative"
+      size="lg"
+      flat
+      dense
+      @click="dismiss"
+    >
+      <q-tooltip self="center middle" class="bg-negative">
+        {{ $t('Dismiss') }}
+      </q-tooltip>
+    </q-btn>
   </div>
 </template>
 
@@ -25,23 +64,34 @@
 export default {
   name: "GenericUserCard",
   props: {
-    buttonText: String,
+    hasFirstIcon: Boolean,
+    firstIcon: String,
+    firstIconColor: String,
+    firstIconTooltip: String,
+    hasSecondIcon: Boolean,
+    secondIcon: String,
+    secondIconColor: String,
+    secondIconTooltip: String,
     cardInfo: Object,
-    hasSecondButton: Boolean,
-    secondButtonText: String
+    hasDismiss: Boolean
   },
   setup(props, ctx) {
-    const button1Clicked = () => {
-      ctx.emit('button1Clicked', props.cardInfo)
+    const firstClicked = () => {
+      ctx.emit('firstClicked', props.cardInfo)
     }
 
-    const button2Clicked = () => {
-      ctx.emit('button2Clicked', props.cardInfo)
+    const secondClicked = () => {
+      ctx.emit('secondClicked', props.cardInfo)
+    }
+
+    const dismiss = () => {
+      ctx.emit('dismiss', props.cardInfo)
     }
 
     return {
-      button1Clicked,
-      button2Clicked
+      firstClicked,
+      secondClicked,
+      dismiss
     }
   },
 }
