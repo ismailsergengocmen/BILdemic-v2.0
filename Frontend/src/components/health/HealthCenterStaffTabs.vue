@@ -10,10 +10,32 @@
         indicator-color="secondary"
         align="justify"
       >
-        <q-tab name="newHealthForms" :label="$t('NewHealthForms')" />
-        <q-tab name="ongoingChats" :label="$t('OngoingChats')" />
+        <q-tab name="newHealthForms" :label="$t('NewHealthForms')">
+          <q-badge 
+            v-if="healthForms?.length !== 0" 
+            floating 
+            rounded 
+            color="red" 
+            :label="newFormsCount" 
+          />
+        </q-tab>
+        <q-tab name="ongoingChats" :label="$t('OngoingChats')">
+          <q-badge 
+            v-if="ongoingHealthForms?.length !== 0" 
+            floating 
+            rounded 
+            color="red" 
+            :label="ongoingChatsCount" 
+          />
+        </q-tab>
         <q-tab name="emergency" :label="$t('Emergency')">
-          <q-badge floating rounded color="red" :label="emergencyCount" />
+          <q-badge 
+            v-if="emergencyInfos?.length !== 0"
+            floating 
+            rounded 
+            color="red" 
+            :label="emergencyCount" 
+          />
         </q-tab>
       </q-tabs>
     </q-header>
@@ -25,7 +47,7 @@
             <div class="full-width">
               <q-input
                 v-model="searchForm"
-                debounce="1000"
+                debounce="700"
                 filled
                 :placeholder="$t('Search')"
                 color="secondary"
@@ -39,13 +61,23 @@
               <q-scroll-area class="full-width q-mt-md" style="height: 500px" >
                 <div class="column q-gutter-y-md full-width items-center">
                   <generic-user-card 
-                    v-for="info in cardInfos" 
+                    v-for="info in filteredHealthForms" 
                     :key="info"  
                     :cardInfo="info"
-                    :buttonText="$t('SeeHealthForm')"
+                    :hasFirstIcon="true"
+                    firstIcon="mdi-file-document"
+                    firstIconColor="indigo-6"
+                    :firstIconTooltip="$t('SeeHealthForm')"
                     class="text-black"
-                    @button1Clicked="showForm"
+                    @firstClicked="showFormForNew"
                   />
+                </div>
+                <div v-if="noNewHealthForm" class="row justify-center q-mt-lg">
+                  <q-card outlined style="width: 50%;" class="q-pa-lg">
+                      <div class="text-secondary text-weight-bold">
+                        {{ $t("NoNewHealthForm") }}
+                      </div>
+                  </q-card>
                 </div>
               </q-scroll-area>
             </div>
@@ -55,7 +87,7 @@
             <div class="row justify-center full-width">
               <q-input
                 v-model="searchChat"
-                debounce="1000"
+                debounce="700"
                 filled
                 :placeholder="$t('Search')"
                 color="secondary"
@@ -69,15 +101,28 @@
               <q-scroll-area class="full-width q-mt-md" style="height: 500px" >
                 <div class="column q-gutter-y-md full-width items-center">
                   <generic-user-card 
-                    v-for="info in cardInfos" 
+                    v-for="info in filteredChats" 
                     :key="info"  
                     :cardInfo="info"
-                    :buttonText="$t('SeeChat')"
-                    :hasSecondButton="true"
-                    :secondButtonText="$t('SeeHealthForm')"
+                    :hasFirstIcon="true"
+                    firstIcon="mdi-forum-outline"
+                    :firstIconTooltip="$t('SeeChat')"
+                    firstIconColor="positive"
+                    :hasSecondIcon="true"
+                    secondIcon="mdi-file-document"
+                    secondIconColor="indigo-6"
+                    :secondIconTooltip="$t('SeeHealthForm')"
                     class="text-black"
-                    @button2Clicked="showForm"
+                    @firstClicked="goToChat"
+                    @secondClicked="showFormForOngoing"
                   />
+                </div>
+                <div v-if="noOngoingChats" class="row justify-center q-mt-lg">
+                  <q-card outlined style="width: 50%;" class="q-pa-lg">
+                      <div class="text-secondary text-weight-bold">
+                        {{ $t("NoOngoingChats") }}
+                      </div>
+                  </q-card>
                 </div>
               </q-scroll-area>
             </div>
@@ -88,12 +133,19 @@
               <q-scroll-area class="full-width q-mt-md" style="height: 550px" >
                 <div class="column q-gutter-y-md full-width items-center">
                   <generic-user-card 
-                    v-for="info in cardInfos" 
+                    v-for="info in emergencyInfos" 
                     :key="info"  
                     :cardInfo="info"
-                    :buttonText="$t('Dismiss')"
-                    class="text-black"
+                    :hasDismiss="true"
+                    @dismiss="dismiss"
                   />
+                </div>
+                <div v-if="noEmergency" class="row justify-center q-mt-lg">
+                  <q-card outlined style="width: 50%;" class="q-pa-lg">
+                      <div class="text-secondary text-weight-bold">
+                        {{ $t("NoEmergency") }}
+                      </div>
+                  </q-card>
                 </div>
               </q-scroll-area>
             </div>
@@ -108,7 +160,12 @@
   <q-dialog v-model="showHealthForm">
     <q-card>
       <q-card-section class="col items-center">
-        <health-form-staff-view />
+        <health-form-staff-view 
+          :person="clickedPerson" 
+          :symptoms="clickedSymptoms"
+          @startChat="startChat"
+          :hasButton="haveStartChatButton"
+        />
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -117,7 +174,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import GenericUserCard from '../generic/GenericUserCard.vue'
 import HealthFormStaffView from '../health/HealthFormStaffView.vue'
 
@@ -127,30 +184,124 @@ export default {
     GenericUserCard,
     HealthFormStaffView
   },
-  props: {
-    cardInfos: Array
-  },
+  props: ['emergencyInfos', 'healthForms', 'ongoingHealthForms'],
 
-  setup() {
+  setup(props, ctx) {
     const tab = ref('newHealthForms');
     const searchForm = ref(null);
     const searchChat = ref(null);
-    const emergencyCount = ref(10);
 
     const showHealthForm = ref(false);
+    const haveStartChatButton = ref(true);
+    const clickedPerson = ref(null);
+    const clickedSymptoms = ref(null);
+    
+    const noNewHealthForm = computed(() => {
+      return props.healthForms?.length === 0;
+    })
 
-    const showForm = () => {
-      // YOU NEED TO GET USER DATA FROM THE CARD WHEN EMITTING
-      showHealthForm.value = true;
+    const noOngoingChats = computed(() => {
+      return props.ongoingHealthForms?.length === 0;
+    })
+
+    const noEmergency = computed(() => {
+      return props.emergencyInfos?.length === 0;
+    })
+
+    const newFormsCount = computed(() => {
+      return props.healthForms?.length;
+    })
+
+    const ongoingChatsCount = computed(() => {
+      return props.ongoingHealthForms?.length;
+    })
+
+    const emergencyCount = computed(() => {
+      return props.emergencyInfos?.length;
+    })
+
+    const dismiss = (data) => {
+      ctx.emit('dismiss', data.UID);
     }
+
+    const showFormForNew = (data) => {
+      haveStartChatButton.value = true;
+      showHealthForm.value = true;
+
+      clickedPerson.value = {
+        name: data.data[0],
+        ID: data.data[1],
+        profilePic: data.url,
+        UID: data.UID,
+        OID: data.uniqueID
+      };
+      clickedSymptoms.value = data.symptoms;
+    }
+
+    const showFormForOngoing = (data) => {
+      haveStartChatButton.value = false;
+      showHealthForm.value = true;
+
+      clickedPerson.value = {
+        name: data.data[0],
+        ID: data.data[1],
+        profilePic: data.url,
+        UID: data.UID,
+        OID: data.uniqueID
+      };
+      clickedSymptoms.value = data.symptoms;
+    }
+
+    const startChat = (data) => {
+      ctx.emit('startChat', data);
+    }
+
+    const goToChat = (data) => {
+      ctx.emit('goToChat', data);
+    }
+
+    const filteredHealthForms = computed(() => {
+      const filtered = props.healthForms;
+      if (searchForm.value) {
+        return filtered?.filter((element) => {
+          return element.data[0].toLowerCase().includes(searchForm.value.toLowerCase());
+        });
+      }
+      return filtered;
+    });
+
+    const filteredChats = computed(() => {
+      const filtered = props.ongoingHealthForms;
+
+      if (searchChat.value) {
+        return filtered?.filter((element) => {
+          return element.data[0].toLowerCase().includes(searchChat.value.toLowerCase());
+        });
+      }
+      return filtered;
+    })
 
     return {
       tab,
       searchForm,
       searchChat,
-      emergencyCount,
       showHealthForm,
-      showForm
+      showFormForNew,
+      showFormForOngoing,
+      dismiss,
+      clickedPerson,
+      clickedSymptoms,
+      startChat,
+      goToChat,
+      haveStartChatButton,
+      filteredHealthForms,
+      filteredChats,
+      noNewHealthForm,
+      noOngoingChats,
+      noEmergency,
+      emergencyCount,
+      ongoingChatsCount,
+      newFormsCount
     } 
   },
 }

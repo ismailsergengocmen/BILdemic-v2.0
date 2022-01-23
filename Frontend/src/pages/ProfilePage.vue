@@ -78,18 +78,6 @@
         </q-card-section>
       </q-card>
     </q-dialog>
-
-    <q-dialog v-model="showUploadSuccessPopup" seamless position="top">
-      <q-card style="width: 300px" :class="dialogColor">
-        <q-card-section>
-          <q-banner dense inline-actions :class="`text-white ${dialogColor}`" >
-            <div class="row justify-center">
-            {{ photoUploadMessage }}
-            </div>
-          </q-banner>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
   </div>
 </template>
 
@@ -132,10 +120,6 @@ export default {
     const file = ref(null)
     const uploading = ref(null)
 
-    const showUploadSuccessPopup = ref(false);
-    const photoUploadMessage = ref(null);
-    const dialogColor = ref(null);
-
     const isUploading =  computed(() => uploading.value !== null);
     const canUpload = computed(() => file.value !== null);
 
@@ -165,23 +149,23 @@ export default {
       sm.uploadProfilePictureToStorage(Store.state.settings.currentUserUID, file.value).then((snapshot) => {
         file.value = null;
         showPopup.value = false;
-        dialogColor.value = "bg-positive";
-        showUploadSuccessPopup.value = true;
-        setTimeout(() => {
-          showUploadSuccessPopup.value = false;
-        }, 3000);
-        photoUploadMessage.value = t('PhotoUploadSuccessful');
+
+        $q.notify({
+          position: 'top',
+          message: t('PhotoUploadSuccessful'),
+          color: 'positive'
+        })
         getProfilePicture();
       })
       .catch((err) => {
         file.value = null;
         showPopup.value = false;
-        dialogColor.value = "bg-negative";
-        showUploadSuccessPopup.value = true;
-        setTimeout(() => {
-          showUploadSuccessPopup.value = false;
-        }, 3000);
-        photoUploadMessage.value = t('UnexpectedError');
+
+        $q.notify({
+          position: 'top',
+          message: t('UnexpectedError'),
+          color: 'negative'
+        })
       })
 
       cleanUp();
@@ -201,9 +185,6 @@ export default {
       canUpload,
       updateFile,
       upload,
-      showUploadSuccessPopup,
-      photoUploadMessage,
-      dialogColor,
       profilePhoto
     }
   },

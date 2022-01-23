@@ -1,29 +1,5 @@
 <template>
-<div>
-  <q-dialog v-model="showErrorMessage" seamless position="top">
-    <q-card style="width: 300px" class="bg-negative">
-      <q-card-section>
-        <q-banner dense inline-actions class="text-white bg-negative" >
-          <div class="row justify-center">
-          {{ $t("IncorrectPassword") }}
-          </div>
-        </q-banner>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-
-  <q-dialog v-model="notVerifiedError" seamless position="top">
-    <q-card style="width: 300px" class="bg-negative">
-      <q-card-section>
-        <q-banner dense inline-actions class="text-white bg-negative" >
-          <div class="row justify-center">
-          {{ $t("NotVerifiedError") }}
-          </div>
-        </q-banner>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
-  
+<div>  
   <q-form style="width: 410px" class="q-py-md">
     <q-input 
       :label="$t('Email')" 
@@ -88,63 +64,64 @@ import { useRouter } from "vue-router"
 import { useStore } from 'vuex'
 import LoginManager from "../../classes/LoginManager"
 import UserManager from "../../classes/UserManager"
+import { useQuasar } from "quasar"
+import { useI18n } from "vue-i18n"
 
 export default {
   name: "LoginForm",
 
   setup(props, ctx) {
+    const $q = useQuasar();
+    const router = useRouter();
+    const $store = useStore();
+    const { t } = useI18n({});
+    const lm = LoginManager.getInstance();
+    const um = UserManager.getInstance();
+
     const mail = ref('');
     const password = ref('');
     const show = ref(false);
-    const showErrorMessage = ref(false);
-    const notVerifiedError = ref(false);
-
-    const router = useRouter();
-    const $store = useStore();
 
     const forgot = () => {
       ctx.emit('forgot');
     }
 
-    const lm = LoginManager.getInstance();
-    const um = UserManager.getInstance();
-
     const signIn = async (email, password) => { 
-      lm.signIn(email, password)
-        .then(async (userCredential) => {
-          if (!userCredential.user.emailVerified) {
-            await lm.logout();
-            notVerifiedError.value = true;
-            setTimeout(() => {
-              notVerifiedError.value = false;
-            }, 4000);
-          }
-          else {
-            const UID = userCredential.user.uid;
-            const role = (await um.getUserInfo(UID)).val()._role;
-            $store.commit('settings/setCurrentUserRole', role);
-            $store.commit('settings/setCurrentUserUID', UID);
-            router.push('/home');
-          }  
-        })
-        .catch((error) => {
-          // mail.value = '';
-          // password.value = '';
-          showErrorMessage.value = true;
-          setTimeout(() => {
-            showErrorMessage.value = false;
-          }, 4000);
-        });
+      lm.signIn(email, password).then(async (userCredential) => {
+        if (!userCredential.user.emailVerified) {
+          await lm.logout();
+          
+          $q.notify({
+            position: 'top',
+            message: t('NotVerifiedError'),
+            color: 'negative'
+          });
         }
+        else {
+          const UID = userCredential.user.uid;
+          const role = (await um.getUserInfo(UID)).val()._role;
+          $store.commit('settings/setCurrentUserRole', role);
+          $store.commit('settings/setCurrentUserUID', UID);
+          router.push('/home');
+        }  
+      }).catch((error) => {
+        // mail.value = '';
+        // password.value = '';
+
+        $q.notify({
+          position: 'top',
+          message: t("IncorrectPassword"),
+          color: 'negative'
+        });
+      });
+    }
 
     return {
       mail,
       password,
       show,
       signIn,
-      showErrorMessage,
-      forgot,
-      notVerifiedError
+      forgot
     }
   },
 }

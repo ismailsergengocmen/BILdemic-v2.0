@@ -58,12 +58,14 @@ import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import LectureManager from '../../classes/LectureManager'
 import { Store } from '../../store/index'
-import { getDatabase, onValue, ref as r } from 'firebase/database'
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: "CoursesPageInstructor",
   setup(props, ctx) {
     const $q = useQuasar();
+    const { t } = useI18n({});
+    const lm = LectureManager.getInstance();
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -79,22 +81,7 @@ export default {
     const place = ref(null);
     const lectures = ref(null);
 
-    const lm = LectureManager.getInstance();
-
     const getLectures = async () => {
-      // const UID = Store.state.settings.currentUserUID;
-      // const db = getDatabase();
-      // const reference = r(db, `Users/${UID}/Lectures/`);
-
-      // onValue(reference, (snapshot) => {
-      //     let lect = [];
-      //     const data = snapshot.val();
-      //     for (const [key, value] of Object.entries(data)) {
-      //       lect.push(value)
-      //     }
-      //     lectures.value = null;
-      //     lectures.value = lect;   
-      // })
       lm.getLectures(Store.state.settings.currentUserUID).then((val) => {
         lectures.value = val.val();
       })
@@ -118,6 +105,12 @@ export default {
     }; 
 
     const createCourse = async (courseName, sectionNo, building, place) => {
+      $q.notify({
+        position: 'top',
+        color: 'positive',
+        message: t('CourseCreationSuccessful')
+      });
+
       await lm.createCourse(courseName, sectionNo, building, place);
       await getLectures();
     }
