@@ -203,5 +203,7 @@ export default {
   AlreadyMadeAmbulanceCall: 'You have already made an ambulance call. Please wait for health center staff to contact you',
   AlreadyFilledHealthForm: 'You have already filled an health form. Please wait for health center staffs to open a patient chat.',
   GoToHealthForm: 'Go to health form',
-  GoToHealthCenterChat: 'Go to health center chat'
+  GoToHealthCenterChat: 'Go to health center chat',
+  MealOrderCancelled: 'Meal order is cancelled',
+  MealOrderSuccessful: 'Meal order is successful'
 }

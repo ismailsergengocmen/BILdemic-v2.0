@@ -152,7 +152,7 @@ export default {
 
       if (search.value) {
         filtered = filtered.filter(({ data }) => {
-          return data[0].includes(search.value);
+          return data[0].toLowerCase().includes(search.value.toLowerCase());
         })
       }
 

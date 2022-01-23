@@ -72,16 +72,33 @@ export default {
     }
 
     const makeRes = async (val) => {
-      await cm.createMealOrder(val.place, val.date, val.time, val.meal);
+      if (val) {
+        await cm.createMealOrder(val.place, val.date, val.time, val.meal).then(() => {
+          $q.notify({
+            position: 'top',
+            color: 'positive',
+            message: t('MealOrderSuccessful')
+          });
+        });
+      }
+      else {
+        $q.notify({
+            position: 'top',
+            color: 'negative',
+            message: t('EmptySlotsError')
+          });
+      }
+      
       await fetchMealOrder();
     }
 
     const cancelReservation = async (OID) => {
       cm.deleteMealOrder(UID, OID).then(() => {
-        // TO DO TO DO TO DO AAAAAAAAA
-        // $q.notify({
-        //   position: 'top',  
-        // });
+        $q.notify({
+          position: 'top',
+          color: 'positive',
+          message: t('MealOrderCancelled')  
+        });
         fetchMealOrder();
       });
     }

@@ -89,10 +89,12 @@
                 v-for="info in filteredCardInfos" 
                 :key="info"  
                 :cardInfo="info"
+                :hasFirstIcon="true"
                 :firstIconTooltip="$t('MealIsTaken')"
                 firstIconColor="positive"
                 firstIcon="mdi-checkbox-marked-circle-outline"
                 class="text-black"
+                @firstClicked="mealIsTaken"
               />
             </div>
           </q-tab-panel>
@@ -131,10 +133,15 @@ export default {
       return filtered;
     })
 
+    const mealIsTaken = async (data) => {
+
+    }
+
     return {
       tab, 
       search,
-      filteredCardInfos
+      filteredCardInfos,
+      mealIsTaken
     }
   },
 }

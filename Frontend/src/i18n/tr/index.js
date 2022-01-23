@@ -203,5 +203,7 @@ export default {
   AlreadyMadeAmbulanceCall: 'Hali hazırda bulunan ambulans çağrınız var. Lütfen sağlık merkezinin size geri dönmesini bekleyin',
   AlreadyFilledHealthForm: 'Hasta formunu çoktan doldurdunuz. Sağlık merkezinin hasta görüşmesi açmasını bekleyiniz.',
   GoToHealthForm: 'HASTA FORMUNA GİDİN',
-  GoToHealthCenterChat: 'SAĞLIK MERKEZİ GÖRÜŞMESİNE GİDİN'
+  GoToHealthCenterChat: 'SAĞLIK MERKEZİ GÖRÜŞMESİNE GİDİN',
+  MealOrderCancelled: 'Yemek siparişi iptal edildi',
+  MealOrderSuccessful: 'Yemek siparişi başarılı şekilde verildi'
 }
