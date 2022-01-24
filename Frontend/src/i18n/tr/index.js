@@ -106,7 +106,7 @@ export default {
   RegionalDist: 'Bölge Bazında Yemek Dağılım',
   IndividualDist: 'Birey Bazında Yemek Dağılımı',
   Normal: 'Normal',
-  Vegeterian: 'Vejeteryan',
+  Vegetarian: 'Vejeteryan',
   Vegan: 'Vegan',
   MenuBasedDesc: 'Menü bazında yemek şipariş dağılımı aşağıdaki gibidir',
   MealIsTaken: 'Yemek alındı',
@@ -178,6 +178,10 @@ export default {
   SelectNewProfilePhoto: 'Yeni profil resmi seçmek için tıklayın',
   PhotoUploadSuccessful: 'Profil resmi başarıyla güncellendi.',
   DormRoomNo: 'Yurt oda numarası',
+  MealType: 'Yemek menü tipi',
+  DORM78: '78. yurt',
+  DORM51: '51. yurt',
+  DORM90: '90. yurt',
   AmbulaneCallDone: 'İletişim bilgileriniz Bilkent Sağlık Merkezi\'ne iletilmiştir. Size en kısa sürede telefonunuzdan ulaşılacaktır.',
   Symptoms: 'Hastada Görülen Belirtiler',
   HealthCenterChat: 'Sağlık Merkezi Hasta Sohbeti',
@@ -199,5 +203,7 @@ export default {
   AlreadyMadeAmbulanceCall: 'Hali hazırda bulunan ambulans çağrınız var. Lütfen sağlık merkezinin size geri dönmesini bekleyin',
   AlreadyFilledHealthForm: 'Hasta formunu çoktan doldurdunuz. Sağlık merkezinin hasta görüşmesi açmasını bekleyiniz.',
   GoToHealthForm: 'HASTA FORMUNA GİDİN',
-  GoToHealthCenterChat: 'SAĞLIK MERKEZİ GÖRÜŞMESİNE GİDİN'
+  GoToHealthCenterChat: 'SAĞLIK MERKEZİ GÖRÜŞMESİNE GİDİN',
+  MealOrderCancelled: 'Yemek siparişi iptal edildi',
+  MealOrderSuccessful: 'Yemek siparişi başarılı şekilde verildi'
 }

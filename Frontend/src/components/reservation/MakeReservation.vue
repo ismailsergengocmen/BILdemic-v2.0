@@ -1,7 +1,7 @@
 <template>
   <div class="row justify-center">
     <div outlined color="secondary" class="bordered">
-      <q-form class="q-gutter-y-none q-px-lg q-py-md full-width text-secondary" >
+      <q-form class="q-gutter-y-md q-px-lg q-py-md full-width text-secondary" >
         <div class="q-mb-md">
           <b>{{ title }}</b>
         </div>
@@ -14,7 +14,6 @@
           outlined
           clearable
           :label="$t('SelectMealType')"
-          :rules="[val => !!val]"
         />
 
         <q-select
@@ -25,7 +24,6 @@
           outlined
           clearable
           :label="$t('SelectPlace')"
-          :rules="[val => !!val]"
         />
 
         <q-select
@@ -36,7 +34,6 @@
           outlined
           clearable
           :label="$t('SelectActivity')"
-          :rules="[val => !!val]"
         />
 
         <q-select
@@ -47,7 +44,6 @@
           outlined
           clearable
           :label="$t('SelectReservationDate')"
-          :rules="[val => !!val]"
         />
 
         <q-select
@@ -58,7 +54,6 @@
           outlined
           clearable
           :label="$t('SelectReservationTime')"
-          :rules="[val => !!val]"
         />
 
         <q-btn :label="$t('MakeReservation')" type="submit" color="secondary" @click.prevent="makeReservation"/>
@@ -102,7 +97,7 @@ export default {
     ];
 
     const placeArr = [
-      "Main Campus Sports Hall", "East Campus Sports Hall", "Dormitories Sports Hall"
+      "78", "51", "90"
     ];
 
     const activityArr = [

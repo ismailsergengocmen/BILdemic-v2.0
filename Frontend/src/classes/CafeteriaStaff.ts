@@ -12,12 +12,12 @@ export default class CafeteriaStaff extends User {
   //Methods
   public showTotalInfo(){
     let cm = CafeteriaManager.getInstance();
-    cm.seeTotalOrders();
+    //cm.seeTotalOrders();
   }
 
   public ShowRegInfo(region: string){
     let cm = CafeteriaManager.getInstance();
-    cm.seeRegionalOrders(region);
+   // cm.seeRegionalOrders(region);
   }
 
   public enterTakenStatus(UID:string, OID: string){

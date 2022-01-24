@@ -41,7 +41,7 @@ export default class ChatManager {
     const user = (await get(ref(db, `Users/${UID}`))).val();
 
     await remove(ref(db, `HealthCenterChats/${UID}`));
-    await remove(ref(db, `OngoingHealthForms/${user.HealthForm._OID}`));
-    await remove(ref(db, `Users/${UID}/HealthForm`));
+    await remove(ref(db, `OngoingHealthForms/${user._orders.HealthForm._OID}`));
+    await remove(ref(db, `Users/${UID}/_orders/HealthForm`));
   }
 }

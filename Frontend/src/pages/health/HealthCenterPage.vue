@@ -115,7 +115,7 @@ export default {
 
     const call = async () => {
       const user = (await um.getUserInfo(UID)).val();
-      if (!user.AmbulanceForm) {
+      if (!user._orders?.AmbulanceForm) {
         show.value = true;
       }
       else {
@@ -143,7 +143,7 @@ export default {
 
     const goToContact = async () => {
       const user = (await um.getUserInfo(UID)).val();
-      if (!user.HealthForm) {
+      if (!user._orders?.HealthForm) {
         router.push('/~/health/form');
       }
       else if (hasActiveChat.value){

@@ -1,9 +1,10 @@
 <template>
   <div>
     <food-distribution 
-      :cardInfos="cardInfos"
-      :regionInfo="regionInfo"
-      :menuInfo="menuInfo"
+      :cardInfos="individualInfo"
+      :regionInfo="regionalInfo"
+      :menuInfo="menuBasedInfo"
+      @mealIsTaken="mealIsTaken"  
     />
 
     <q-page-sticky position="bottom-left" :offset="fabPos" v-if="isMobile">
@@ -20,91 +21,23 @@
 </template>
 
 <script>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import FoodDistribution from '../../components/cafeteria/FoodDistribution.vue'
+import { useI18n } from 'vue-i18n' 
+import CafeteriaManager from '../../classes/CafeteriaManager'
+import UserManager from '../../classes/UserManager'
 
 export default {
   name: "CafeteriaStaffPage",
   components: {
     FoodDistribution
   },
-  computed: {
-    regionInfo() {
-      return [
-        {
-          name: '78.yurt',
-          data: [
-            {
-              label: this.$t('Normal'),
-              data: 50
-            },
-            {
-              label: this.$t('Vegan'),
-              data: 50
-            },
-            {
-              label: this.$t('Vegetarian'),
-              data: 50
-            },
-          ]
-        },
-        {
-          name: '78.yurt',
-          data: [
-            {
-              label: this.$t('Normal'),
-              data: 50
-            },
-            {
-              label: this.$t('Vegan'),
-              data: 50
-            },
-            {
-              label: this.$t('Vegetarian'),
-              data: 50
-            },
-          ]
-        },
-        {
-          name: '78.yurt',
-          data: [
-            {
-              label: this.$t('Normal'),
-              data: 50
-            },
-            {
-              label: this.$t('Vegan'),
-              data: 50
-            },
-            {
-              label: this.$t('Vegetarian'),
-              data: 50
-            },
-          ]
-        }
-      ]
-    },
-    menuInfo() {
-      return [
-        {
-          label: this.$t('Normal'),
-          data: 110
-        },
-        {
-          label: this.$t('Vegetarian'),
-          data: 56
-        },
-        {
-          label: this.$t('Vegan'),
-          data: 5
-        }
-      ]
-    },
-  },
-
   setup(props, ctx) {
     const $q = useQuasar();
+    const { t } = useI18n({});
+    const cm = CafeteriaManager.getInstance();
+    const um = UserManager.getInstance();
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -116,48 +49,146 @@ export default {
       open.value = !isMobile.value;
     })
 
-    const hasReservation = ref(false);
-
     const toggleDrawer = () => {
       open.value = !open.value
       ctx.emit('toggleDrawer');
     }
 
-    const cardInfos = [
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "Ahmed Salih Cezayir",
-          21802918,
-          "Normal"
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "Asude Cezayir",
-          21802918,
-          "Vegan"
-        ]
-      },
-      {
-        url: "https://placeimg.com/500/300/nature",
-        data: [
-          "İsmail Sergen Göçmen",
-          21802918,
-          "Vegeterian"
-        ]
-      }
-    ];
-
     const fabPos = ref([ 18, 18 ]);
+    const menuBasedInfo = ref(null);
+    const regionalInfo = ref(null);
+    const individualInfo = ref(null);
+
+    const initializeMealDistributionInfos = async () => {
+      cm.calculateTotalOrder().then((data) => {
+        initializeMenuBased(data);
+        initializeRegional(data);
+      });
+
+      const reservations = await cm.getAllMealOrders();
+      individualInfo.value = [];
+
+      if (reservations) {
+        for (let key of Object.keys(reservations)) {
+          const UID = reservations[key]._ownerUID;
+          const user = (await um.getUserInfo(UID)).val();
+          const reserv = {
+            url: user._profilePic,
+            data: [
+              user._name,
+              user?._ID,
+              reservations[key]._place + " - " + reservations[key]._type,
+              reservations[key]._date + " - " + reservations[key]._time
+            ],
+            uniqueId: reservations[key]._OID,
+            owner: reservations[key]._ownerUID 
+          }
+
+          individualInfo.value.push(reserv);
+        }
+      }
+    }
+
+    const initializeMenuBased = (data) => {
+      const normal = data.normal.type90 + data.normal.type78 + data.normal.type51;
+      const vegetarian = data.vegetarian.type90 + data.vegetarian.type78 + data.vegetarian.type51;
+      const vegan = data.vegan.type90 + data.vegan.type78 + data.vegan.type51;
+
+      menuBasedInfo.value = [
+        {
+          label: t('Normal'),
+          data: normal
+        },
+        {
+          label: t('Vegetarian'),
+          data: vegetarian
+        },
+        {
+          label: t('Vegan'),
+          data: vegan
+        }
+      ];
+    }
+
+    const initializeRegional = (data) => {
+      regionalInfo.value = [
+        {
+          name: t('DORM51'),
+          data: [
+            {
+              label: t('Normal'),
+              data: data.normal.type51
+            },
+            {
+              label: t('Vegetarian'),
+              data: data.vegetarian.type51
+            },
+            {
+              label: t('Vegan'),
+              data: data.vegan.type51
+            }
+          ]
+        },
+        {
+          name: t('DORM78'),
+          data: [
+            {
+              label: t('Normal'),
+              data: data.normal.type78
+            },
+            {
+              label: t('Vegetarian'),
+              data: data.vegetarian.type78
+            },
+            {
+              label: t('Vegan'),
+              data: data.vegan.type78
+            }
+          ]
+        },
+        {
+          name: t('DORM90'),
+          data: [
+            {
+              label: t('Normal'),
+              data: data.normal.type90
+            },
+            {
+              label: t('Vegetarian'),
+              data: data.vegetarian.type90
+            },
+            {
+              label: t('Vegan'),
+              data: data.vegan.type90
+            }
+          ]
+        }
+      ]
+    }
+
+    const mealIsTaken = async (data) => {
+      cm.deleteMealOrder(data.UID, data.OID).then(async () => {
+        $q.notify({
+          position: 'top',
+          color: 'positive',
+          message: t('MealIsTaken')
+        });
+        await initializeMealDistributionInfos();
+      });
+    }
+
+    onBeforeMount(async () => {
+      await initializeMealDistributionInfos();
+    })
 
     return {
       toggleDrawer,
       isMobile,
-      hasReservation,
-      cardInfos,
       fabPos,
+      menuBasedInfo,
+      regionalInfo,
+      individualInfo,
+      mealIsTaken
     }
   },
 }

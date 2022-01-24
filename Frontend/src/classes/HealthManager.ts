@@ -17,11 +17,6 @@ export default class HealthManager {
         return this.instance;
     }
 
-    public createForm(user: User, date: string, place: string, time: string): boolean {
-        //TO DO
-        return true;
-    }
-
     public async makeAmbulanceCall(UID: string) {
         const db = getDatabase();
         const user = (await get(ref(db, `Users/${UID}`))).val();
@@ -33,7 +28,7 @@ export default class HealthManager {
         const OID = ambulanceForm.OID;
 
         await set(ref(db, `PendingAmbulanceForms/${OID}`), ambulanceForm);
-        return set(ref(db, `Users/${UID}/AmbulanceForm`), ambulanceForm);
+        return set(ref(db, `Users/${UID}/_orders/AmbulanceForm`), ambulanceForm);
     }
 
     public async getAllAmbulanceForms() {
@@ -45,16 +40,16 @@ export default class HealthManager {
     public async dismissAmbulanceForm(UID: string) {
         const db = getDatabase();
 
-        const form = (await get(ref(db, `Users/${UID}/AmbulanceForm`))).val();
+        const form = (await get(ref(db, `Users/${UID}/_orders/AmbulanceForm`))).val();
 
         await remove(ref(db, `PendingAmbulanceForms/${form._OID}`));
-        await remove(ref(db, `Users/${UID}/AmbulanceForm`));
+        await remove(ref(db, `Users/${UID}/_orders/AmbulanceForm`));
     }
 
     public async getAmbulanceForm(UID: string) {
         const db = getDatabase();
 
-        const form = (await get(ref(db, `Users/${UID}/AmbulanceForm`))).val();
+        const form = (await get(ref(db, `Users/${UID}/_orders/AmbulanceForm`))).val();
 
         return get(ref(db, `PendingAmbulanceForms/${form._OID}`));
     }
@@ -63,7 +58,7 @@ export default class HealthManager {
         const db = getDatabase();
 
         await set(ref(db, `PendingAmbulanceForms/${form._OID}`), form);
-        await set(ref(db, `Users/${form._ownerUID}/AmbulanceForm`), form);
+        await set(ref(db, `Users/${form._ownerUID}/_orders/AmbulanceForm`), form);
     }
 
     public async createHealthForm(UID: string, symptomsList: Array<string>) {
@@ -72,12 +67,12 @@ export default class HealthManager {
         const OID = healthForm.OID;
 
         await set(ref(db, `PendingHealthForms/${OID}`), healthForm);
-        await set(ref(db, `Users/${UID}/HealthForm`), healthForm);
+        await set(ref(db, `Users/${UID}/_orders/HealthForm`), healthForm);
     }
 
     public async healthFormChatStarted(UID: string) {
         const db = getDatabase();
-        const form = (await get(ref(db, `Users/${UID}/HealthForm`))).val();
+        const form = (await get(ref(db, `Users/${UID}/_orders/HealthForm`))).val();
 
         await remove(ref(db, `PendingHealthForms/${form._OID}`));
         await set(ref(db, `OngoingHealthForms/${form._OID}`), form);
