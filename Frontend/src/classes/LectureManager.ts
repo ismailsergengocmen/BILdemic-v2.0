@@ -82,7 +82,8 @@ export default class LectureManager {
     return get(ref(db, `Lectures/${LID}/_lectureCode`));
   }
 
-  //This function is used to change status of a particular seat from teacher
+  //This function is used to change status of a particular seat from teacher  
+  // REVISED: get row and col value from _myseat via input UID. no more SID parameter 
   public async changeSeatStatus(LID: number, AID: number, SID: number, confirm: boolean) {
     const db = getDatabase();
 
@@ -237,5 +238,29 @@ export default class LectureManager {
 
     return realLectureCode == lectureCode;
   }
+
+  // get seat plan function => parameters: LID Returns seat plan
+
+  // Update Seat code function => Changes original seat ID(which is now seat code). Parameters (LectureID, UserID). No return
+  
+  // Show seat code function => get myseat row and col value from user UID and LID. do not return anything in definition, use return get(...).
+
+  // Reset seat status function => Reset every seat's status to black color 
+  // after teacher creates random lecture code.
+
+
+  //-------------------------------------------------
+
+
+  // Check neighbour seat code function => parameters: LID, UID, rightcode, leftcode. return 1 if left code is wrong, 2 if right code is wrong, 0 if both true. !!= For frontend popus 
+  // to warn user which side if entered wrong
+
+  // Add status property to seat which holds seat owner's status in particular lesson.
+  // Also add neighbour seat statuses as property to seat which reprensents if neightbour code is entered wrong. != This will be used to show tooltip in frontend.
+
+  // when teacher creates random lecture code, every seat color status will be black. Then seat current owner's allowence status
+  // will be checked and not allowed ones will be colored as red. If student enters correct lecture code, their seat's color status
+  // will be grey. After that, when students enter their neighbour student and check, depending on the correct and wrong entrances,
+  // color status will be green and yellow.  !! = This propabably cause to double yellow seats in seatplan. 
 }
 
