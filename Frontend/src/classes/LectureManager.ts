@@ -244,7 +244,7 @@ export default class LectureManager {
   public async getSeatPlan(LID:number){
     const db = getDatabase();
 
-    return (await get(ref(db,`Lectures/${LID}/_seatplan`))).val();
+    return (await get(ref(db,`Lectures/${LID}/_seatPlan`))).val();
   }
 
   
@@ -254,20 +254,22 @@ export default class LectureManager {
     let name = (await get(ref(db,`Users/${UID}/_name`))).val();
     let namePart = name.substring(0,2);
 
-    let numPart = (Math.random() * 10000).toString();
+    let numPart = (Math.floor(Math.random() * 100000) + 10000).toString();
     let newCode = namePart.concat(numPart);
 
-    let col = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_myseat/col`))).val();
-    let row = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_myseat/row`))).val();
+    let col = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_mySeat/col`))).val();
+    let row = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_mySeat/row`))).val();
 
     (await set(ref(db,`Lectures/${LID}/_seatPlan/${row}/${col}/_SID`), newCode));
   }
 
   // Show seat code function => get myseat row and col value from user UID and LID. do not return anything in definition, use return get(...).
-  public async showSeatCode(LID:number, UID:number){
+  public async getSeatCode(LID:number, UID:number){
     const db = getDatabase();
 
-    return (await get(ref(db,`Users/${UID}/Lectures/${LID}/_mySeat`))).val();
+    const mySeat = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_mySeat`))).val();
+
+    return (await get(ref(db,`Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_SID`))).val();
   }
 
   // Reset seat status function => Reset every seat's status to black color 
@@ -275,8 +277,12 @@ export default class LectureManager {
   public async resetSeatPlanStatus(LID:number){
     const db = getDatabase();
 
-    for(let row = 0; row < 5 ; row++){
-      for(let col = 0; col < 5; col++){
+    const seatPlan = (await get(ref(db,`Lectures/${LID}/_seatPlan`))).val();
+    const rowCount = Object.keys(seatPlan).length;
+
+    for (let row = 0; row < rowCount; row++) {
+      const colCount = Object.keys(seatPlan[row]).length;
+      for (let col = 0; col < colCount; col++) {
         (await set(ref(db,`Lectures/${LID}/_seatPlan/${row}/${col}/_color`), 0));
       }
     }
@@ -289,11 +295,62 @@ export default class LectureManager {
 
   // Check neighbour seat code function => parameters: LID, UID, rightcode, leftcode. return 1 if left code is wrong, 2 if right code is wrong, 0 if both true. !!= For frontend popup 
   // to warn user which side if entered wrong
+  public async checkNeighbourSeatCode(LID: string, UID: string, rightCode: string, leftCode: string) {
+    const db = getDatabase();
 
+    const mySeat = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_mySeat`))).val();
+    const seat = (await get(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}`))).val();
+
+    const rightSeat = (await get(ref(db,`Users/${seat._studentRightUID}/Lectures/${LID}/_mySeat`))).val();
+    const leftSeat = (await get(ref(db,`Users/${seat._studentLeftUID}/Lectures/${LID}/_mySeat`))).val();
+
+    const realRightCode = (await get(ref(db,`Lectures/${LID}/_seatPlan/${rightSeat.col}/${rightSeat.row}/_SID`))).val();
+    const realLeftCode = (await get(ref(db,`Lectures/${LID}/_seatPlan/${leftSeat.col}/${leftSeat.row}/_SID`))).val();
+
+    if (realRightCode === rightCode && realLeftCode === leftCode) {
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_color`), 3);
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_leftNeighbourStatus`), true);
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_rightNeighbourStatus`), true);
+      return 0;
+    }
+    else if (realLeftCode !== leftCode && realRightCode === rightCode) {
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_color`), 4);
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_leftNeighbourStatus`), false);
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_rightNeighbourStatus`), true);
+      return 1;
+    }
+    else if (realLeftCode === leftCode && realRightCode !== rightCode) {
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_color`), 4);
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_leftNeighbourStatus`), true);
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_rightNeighbourStatus`), false);
+      return 2;
+    }
+    else {
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_color`), 4);
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_leftNeighbourStatus`), false);
+      set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_rightNeighbourStatus`), false);
+      return 3;
+    }
+  }
+
+  public async changeColorToGrey(LID: string, UID: string) {
+    const db = getDatabase();
+
+    const mySeat = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_mySeat`))).val();
+    await set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_color`), 2);
+  }
 
   // when teacher creates random lecture code, every seat color status will be black (DONE). Then seat current owner's allowence status
   // will be checked and not allowed ones will be colored as red. If student enters correct lecture code, their seat's color status
   // will be grey. After that, when students enter their neighbour student and check, depending on the correct and wrong entrances,
   // color status will be green and yellow.  !! = This propabably cause to double yellow seats in seatplan. 
+
+
+  // black => 0 X
+  // red => 1
+  // grey => 2 X
+  // green => 3 X
+  // yellow => 4 X
+
 }
 

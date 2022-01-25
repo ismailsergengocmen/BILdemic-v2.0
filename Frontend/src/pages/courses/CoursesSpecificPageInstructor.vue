@@ -21,10 +21,10 @@
     <div class="row q-ma-md">
       <seating-plan 
         :studentView="false"
-        :active="true" 
+        :active="active" 
         :row="5"
         :col="5"
-        :seatingPlan="seatingPlan"
+        :seatingPlan="seatingPlanStatus"
       />
 
       <div class="column q-mt-md q-ml-xl">
@@ -71,6 +71,7 @@ import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import SeatingPlan from '../../components/courses/SeatingPlan.vue'
 import LectureManager from '../../classes/LectureManager'
+import { useI18n } from 'vue-i18n'
 
 export default {
   name: "CourseSpecificPageInstructor",
@@ -80,6 +81,8 @@ export default {
   props: ['id'],
   setup(props, ctx) {
     const $q = useQuasar();
+    const lm = LectureManager.getInstance();
+    const { t } = useI18n({});
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -87,10 +90,10 @@ export default {
 
     const open = ref(!isMobile.value);
 
-    const lm = LectureManager.getInstance();
-
     const lectureInfo = ref(null);
     const lectureCode = ref(null);
+    const seatingPlanStatus = ref();
+    const active = ref(false);
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
@@ -100,6 +103,8 @@ export default {
       lm.getLecture(props.id).then((val) => {
         lectureInfo.value = val.val();
       });
+      await lm.resetSeatPlanStatus(props.id);
+      await initializeSeatingPlanStatus();
     });
 
     const toggleDrawer = () => {
@@ -108,11 +113,57 @@ export default {
     }
 
     const generate = async () => { 
+      active.value = true;
       await lm.generateLectureCode(props.id);
-      lm.getLectureCode(props.id).then((val) => {
+      await lm.getLectureCode(props.id).then((val) => {
         lectureCode.value = val.val();
       });
+      await lm.resetSeatPlanStatus(props.id);
+
+      setInterval(async () => {
+        await initializeSeatingPlanStatus();
+      }, 2000)
     }; 
+
+    const initializeSeatingPlanStatus = async () => {
+      const seatPlan = await lm.getSeatPlan(props.id);
+      const rowCount = Object.keys(seatPlan).length;
+      seatingPlanStatus.value = [];
+
+      for (let i = 0; i < rowCount; i++) {
+        const colCount = Object.keys(seatPlan[i]).length;
+        const rowArray = [];
+
+        for (let k = 0; k < colCount; k++) {
+          if (seatPlan[i][k]._color === 0) {
+            rowArray.push({
+              status: "bg-black"
+            });
+          }  
+          else if (seatPlan[i][k]._color === 1) {
+            rowArray.push({
+              status: "bg-red"
+            });
+          }
+          else if (seatPlan[i][k]._color === 2) {
+            rowArray.push({
+              status: "bg-grey"
+            });
+          }
+          else if (seatPlan[i][k]._color === 3) {
+            rowArray.push({
+              status: "bg-green"
+            });
+          }
+          else {
+            rowArray.push({
+              status: "bg-yellow"
+            });
+          }
+        }
+        seatingPlanStatus.value.push(rowArray);
+      }
+    }
 
     const seatingPlan = [
       [
@@ -222,10 +273,12 @@ export default {
     return {
       toggleDrawer,
       isMobile,
-      seatingPlan,
       lectureCode,
       lectureInfo,
-      generate
+      generate,
+      seatingPlanStatus,
+      seatingPlan,
+      active
     }
   },
 }

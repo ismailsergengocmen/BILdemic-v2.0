@@ -135,7 +135,7 @@ export default class Seat implements StudentObserver{
     }
 
     public get rightNeighbourStatus(): boolean {
-        return this._ownerStatus;
+        return this._rightNeighbourStatus;
     }
 
     public set rightNeighbourStatus(rightNeighbourStatus: boolean) {
