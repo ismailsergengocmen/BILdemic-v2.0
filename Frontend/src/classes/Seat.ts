@@ -15,6 +15,10 @@ export default class Seat implements StudentObserver{
     private _lectureName:string;
     private _row: number;
     private _col: number;
+    private _color: number;
+    private _ownerStatus: boolean;
+    private _leftNeighbourStatus: boolean;
+    private _rightNeighbourStatus: boolean;
 
     // Constructors
     public constructor(SID:string, studentOwnerUID:string, studentLeftUID: string, studentRightUID: string, confirm: boolean, ownerCovidStatus: CampusStatus, lectureName: string){
@@ -104,5 +108,37 @@ export default class Seat implements StudentObserver{
 
     public set col(col: number) {
         this._col = col;
+    }
+
+    public get color(): number {
+        return this._color;
+    }
+
+    public set color(color: number) {
+        this._color = color;
+    }
+
+    public get ownerStatus(): boolean {
+        return this._ownerStatus;
+    }
+
+    public set ownerStatus(ownerStatus: boolean) {
+        this._ownerStatus = ownerStatus;
+    }
+
+    public get leftNeighbourStatus(): boolean {
+        return this._leftNeighbourStatus;
+    }
+
+    public set leftNeighbourStatus(leftNeighbourStatus: boolean) {
+        this._leftNeighbourStatus = leftNeighbourStatus;
+    }
+
+    public get rightNeighbourStatus(): boolean {
+        return this._ownerStatus;
+    }
+
+    public set rightNeighbourStatus(rightNeighbourStatus: boolean) {
+        this._rightNeighbourStatus = rightNeighbourStatus;
     }
 }

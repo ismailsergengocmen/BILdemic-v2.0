@@ -65,6 +65,7 @@ export default class LectureManager {
 
     let lectureCode = Date.now();
     set(ref(db, `Lectures/${LID}/_lectureCode`), lectureCode);
+    this.resetSeatPlanStatus(LID);
   }
 
   //Gets lecture code of a lecture
@@ -240,25 +241,57 @@ export default class LectureManager {
   }
 
   // get seat plan function => parameters: LID Returns seat plan
+  public async getSeatPlan(LID:number){
+    const db = getDatabase();
 
-  // Update Seat code function => Changes original seat ID(which is now seat code). Parameters (LectureID, UserID). No return
+    return (await get(ref(db,`Lectures/${LID}/_seatplan`))).val();
+  }
+
   
+  // Update Seat code function => Changes original seat ID(which is now seat code). Parameters (LectureID, UserID). No return
+  public async updateSeatCode(LID:number,UID:number){
+    const db = getDatabase();
+    let name = (await get(ref(db,`Users/${UID}/_name`))).val();
+    let namePart = name.substring(0,2);
+
+    let numPart = (Math.random() * 10000).toString();
+    let newCode = namePart.concat(numPart);
+
+    let col = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_myseat/col`))).val();
+    let row = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_myseat/row`))).val();
+
+    (await set(ref(db,`Lectures/${LID}/_seatPlan/${row}/${col}/_SID`), newCode));
+  }
+
   // Show seat code function => get myseat row and col value from user UID and LID. do not return anything in definition, use return get(...).
+  public async showSeatCode(LID:number, UID:number){
+    const db = getDatabase();
+
+    return (await get(ref(db,`Users/${UID}/Lectures/${LID}/_mySeat`))).val();
+  }
 
   // Reset seat status function => Reset every seat's status to black color 
   // after teacher creates random lecture code.
+  public async resetSeatPlanStatus(LID:number){
+    const db = getDatabase();
 
+    for(let row = 0; row < 5 ; row++){
+      for(let col = 0; col < 5; col++){
+        (await set(ref(db,`Lectures/${LID}/_seatPlan/${row}/${col}/_color`), 0));
+      }
+    }
+  }
+
+  // Add status property to seat which holds seat owner's status in particular lesson(DONE).
+  // Also add neighbour seat statuses as property to seat which reprensents if neighbor code is entered wrong. != This will be used to show tooltip in frontend(DONE).
 
   //-------------------------------------------------
 
-
-  // Check neighbour seat code function => parameters: LID, UID, rightcode, leftcode. return 1 if left code is wrong, 2 if right code is wrong, 0 if both true. !!= For frontend popus 
+  // Check neighbour seat code function => parameters: LID, UID, rightcode, leftcode. return 1 if left code is wrong, 2 if right code is wrong, 0 if both true. !!= For frontend popup 
   // to warn user which side if entered wrong
 
-  // Add status property to seat which holds seat owner's status in particular lesson.
-  // Also add neighbour seat statuses as property to seat which reprensents if neightbour code is entered wrong. != This will be used to show tooltip in frontend.
 
-  // when teacher creates random lecture code, every seat color status will be black. Then seat current owner's allowence status
+  // when teacher creates random lecture code, every seat color status will be black (DONE). Then seat current owner's allowence status
   // will be checked and not allowed ones will be colored as red. If student enters correct lecture code, their seat's color status
   // will be grey. After that, when students enter their neighbour student and check, depending on the correct and wrong entrances,
   // color status will be green and yellow.  !! = This propabably cause to double yellow seats in seatplan. 
