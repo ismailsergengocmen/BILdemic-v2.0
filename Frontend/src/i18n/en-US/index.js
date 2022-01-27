@@ -212,5 +212,6 @@ export default {
   NeighLeftWrong: 'Left neighbour student info is wrong!',
   NeighRightWrong: 'Right neighbour student info is wrong!',
   NeightAllWrong: 'Both right and left neighbour student info is wrong!',
-  NeighbourCheckIsDone: 'You entered your neighbour info successfully.'
+  NeighbourCheckIsDone: 'You entered your neighbour info successfully.',
+  SeatStatusUpdated: 'Student seat status is successfully updated'
 }

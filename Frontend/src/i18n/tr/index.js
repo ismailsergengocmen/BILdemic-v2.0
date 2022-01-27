@@ -212,5 +212,6 @@ export default {
   NeighLeftWrong: 'Sol sıra komşusu bilgisi yanlış!',
   NeighRightWrong: 'Sağ sıra komşusu bilgisi yanlış!',
   NeightAllWrong: 'Hem sağ hem sol sıra komşusu bilgisi yanlış!',
-  NeighbourCheckIsDone: 'Sıra komşusu bilgisini doğru bir şekilde doldurdunuz'
+  NeighbourCheckIsDone: 'Sıra komşusu bilgisini doğru bir şekilde doldurdunuz',
+  SeatStatusUpdated: 'Öğrenci sıra bilgisi başarıyla güncellendi'
 }

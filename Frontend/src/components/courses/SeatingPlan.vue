@@ -95,8 +95,10 @@
               <q-separator vertical inset class="q-mx-lg" />
 
               <div class="column q-gutter-sm">
-                <q-btn unelevated :label="$t('Accept')" color="positive"/>
-                <q-btn unelevated :label="$t('Decline')" color="negative"/>
+                <q-btn unelevated :label="$t('Accept')" color="positive" 
+                @click="changeColor(3, a - 1, b - 1)" v-close-popup />
+                <q-btn unelevated :label="$t('Decline')" color="negative" 
+                @click="changeColor(4, a - 1, b - 1)" v-close-popup />
                 <q-btn outline unelevated :label="$t('Cancel')" v-close-popup class="text-secondary"/>
               </div> 
             </div>
@@ -156,6 +158,8 @@ export default {
 
     const left = ref(null)
     const right = ref(null)
+    const a = ref(null);
+    const b = ref(null);
 
     const showNeighPopup = ref(false);
 
@@ -173,6 +177,10 @@ export default {
       })
     }
 
+    const changeColor = (color, row, col) => {
+      ctx.emit('changeColor', { color, row, col });
+    }
+
     watch(() => props.neighbourCheckIsDone, (newData) => {
       showNeighPopup.value = !newData;
     })
@@ -184,7 +192,8 @@ export default {
       showPopupForNeigh,
       showNeighPopup,
       select,
-      submit
+      submit,
+      changeColor
     }
   },
 }

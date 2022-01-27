@@ -111,7 +111,7 @@ export default {
             message: t('LectureCodeCorrect')
           });
 
-          await lm.changeColorToGrey(props.id, UID);
+          await lm.changeColor(props.id, UID, 2);
           await lm.updateSeatCode(props.id, UID);
           seatCode.value = await lm.getSeatCode(props.id, UID);
         }

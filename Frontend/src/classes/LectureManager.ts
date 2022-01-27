@@ -333,11 +333,17 @@ export default class LectureManager {
     }
   }
 
-  public async changeColorToGrey(LID: string, UID: string) {
+  public async changeColor(LID: string, UID: string, color: number) {
     const db = getDatabase();
 
     const mySeat = (await get(ref(db,`Users/${UID}/Lectures/${LID}/_mySeat`))).val();
-    await set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_color`), 2);
+    await set(ref(db, `Lectures/${LID}/_seatPlan/${mySeat.row}/${mySeat.col}/_color`), color);
+  }
+
+  public async findOwnerUIDBySeat(LID: string, row: string, col: string) {
+    const db = getDatabase();
+
+    return (await get(ref(db, `Lectures/${LID}/_seatPlan/${row}/${col}/_studentOwnerUID`))).val();
   }
 
   // when teacher creates random lecture code, every seat color status will be black (DONE). Then seat current owner's allowence status

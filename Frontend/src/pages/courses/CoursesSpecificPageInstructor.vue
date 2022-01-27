@@ -25,6 +25,7 @@
         :row="5"
         :col="5"
         :seatingPlan="seatingPlanStatus"
+        @changeColor="changeColor"
       />
 
       <div class="column q-mt-md q-ml-xl">
@@ -165,110 +166,17 @@ export default {
       }
     }
 
-    const seatingPlan = [
-      [
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-yellow"
-        },
-        {
-          status: "bg-grey"
-        },
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-yellow"
-        }
-      ],
-      [
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-grey"
-        },
-      ],
-      [
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-grey"
-        },
-        {
-          status: "bg-black"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-grey"
-        }
-      ],
-      [
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-yellow"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-grey"
-        },
-        {
-          status: "bg-yellow"
-        }
-      ],
-      [
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-black"
-        },
-        {
-          status: "bg-red"
-        },
-        {
-          status: "bg-green"
-        }
-      ],
-      [
-        {
-          status: "bg-black"
-        },
-        {
-          status: "bg-yellow"
-        },
-        {
-          status: "bg-black"
-        },
-        {
-          status: "bg-green"
-        },
-        {
-          status: "bg-green"
-        }
-      ],
-    ];
+    const changeColor = async (data) => {
+      // const UID = await lm.findOwnerUIDBySeat(props.id, data.row, data.col);
+      // lm.changeColor(props.id, UID, data.color).then(async () => {
+      //   $q.notify({
+      //     position: 'top',
+      //     color: 'positive',
+      //     message: t('SeatStatusUpdated')
+      //   });
+      //   await initializeSeatingPlanStatus();
+      // });
+    }
 
     return {
       toggleDrawer,
@@ -277,8 +185,8 @@ export default {
       lectureInfo,
       generate,
       seatingPlanStatus,
-      seatingPlan,
-      active
+      active,
+      changeColor
     }
   },
 }
