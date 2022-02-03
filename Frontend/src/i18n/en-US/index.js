@@ -205,5 +205,13 @@ export default {
   GoToHealthForm: 'Go to health form',
   GoToHealthCenterChat: 'Go to health center chat',
   MealOrderCancelled: 'Meal order is cancelled',
-  MealOrderSuccessful: 'Meal order is successful'
+  MealOrderSuccessful: 'Meal order is successful',
+  LectureCodeCorrect: 'Lecture code is correct. Please enter seat neighbour info.',
+  LectureCodeNotCorrect: 'Lecture code is not correct',
+  NeighInfoCorrect: 'Neighbour student info is correct',
+  NeighLeftWrong: 'Left neighbour student info is wrong!',
+  NeighRightWrong: 'Right neighbour student info is wrong!',
+  NeightAllWrong: 'Both right and left neighbour student info is wrong!',
+  NeighbourCheckIsDone: 'You entered your neighbour info successfully.',
+  SeatStatusUpdated: 'Student seat status is successfully updated'
 }

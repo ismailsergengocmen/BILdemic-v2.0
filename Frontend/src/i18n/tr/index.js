@@ -205,5 +205,13 @@ export default {
   GoToHealthForm: 'HASTA FORMUNA GİDİN',
   GoToHealthCenterChat: 'SAĞLIK MERKEZİ GÖRÜŞMESİNE GİDİN',
   MealOrderCancelled: 'Yemek siparişi iptal edildi',
-  MealOrderSuccessful: 'Yemek siparişi başarılı şekilde verildi'
+  MealOrderSuccessful: 'Yemek siparişi başarılı şekilde verildi',
+  LectureCodeCorrect: 'Ders kodu doğru. Lütfen sıra komşusu bilgisini giriniz.',
+  LectureCodeNotCorrect: 'Ders kodu yanlış',
+  NeighInfoCorrect: 'Sıra komşusu bilgileri doğru',
+  NeighLeftWrong: 'Sol sıra komşusu bilgisi yanlış!',
+  NeighRightWrong: 'Sağ sıra komşusu bilgisi yanlış!',
+  NeightAllWrong: 'Hem sağ hem sol sıra komşusu bilgisi yanlış!',
+  NeighbourCheckIsDone: 'Sıra komşusu bilgisini doğru bir şekilde doldurdunuz',
+  SeatStatusUpdated: 'Öğrenci sıra bilgisi başarıyla güncellendi'
 }

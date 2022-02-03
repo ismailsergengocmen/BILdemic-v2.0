@@ -37,7 +37,7 @@
     </div>
 
     <!-- Student view and seating plan is active -->
-    <div v-if="studentView && active && !firstTime">
+    <div v-if="studentView && active && !firstTime && !neighbourCheckIsDone">
       <div class="row" v-for="a in row" :key="a">
         <div :class="neighbourColors(a - 1, b - 1)" v-for="b in col" :key="b">
           <q-btn v-if="a == personalRow + 1 && b == personalCol + 1" class="seat" @click="showPopupForNeigh">
@@ -47,6 +47,19 @@
               </q-icon>
             </template>
           </q-btn>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student view and seating plan is active -->
+    <div v-if="studentView && active && !firstTime && neighbourCheckIsDone">
+      <div class="row" v-for="a in row" :key="a">
+        <div class="seat" v-for="b in col" :key="b">
+          <div v-if="a == personalRow + 1 && b == personalCol + 1" class="seat mySeat">
+              <q-icon v-if="a == (personalRow + 1) && b == (personalCol + 1)" size="sm" name="mdi-check" color="white">
+                <q-tooltip class="bg-secondary"> {{ $t('NeighbourCheckIsDone') }} </q-tooltip>
+              </q-icon>
+          </div>
         </div>
       </div>
     </div>
@@ -82,8 +95,10 @@
               <q-separator vertical inset class="q-mx-lg" />
 
               <div class="column q-gutter-sm">
-                <q-btn unelevated :label="$t('Accept')" color="positive"/>
-                <q-btn unelevated :label="$t('Decline')" color="negative"/>
+                <q-btn unelevated :label="$t('Accept')" color="positive" 
+                @click="changeColor(3, a - 1, b - 1)" v-close-popup />
+                <q-btn unelevated :label="$t('Decline')" color="negative" 
+                @click="changeColor(4, a - 1, b - 1)" v-close-popup />
                 <q-btn outline unelevated :label="$t('Cancel')" v-close-popup class="text-secondary"/>
               </div> 
             </div>
@@ -97,17 +112,18 @@
       <q-card style="width: 300px">
         <q-card-section class="col items-center">
           <q-banner dense inline-actions class="text-white bg-secondary">
-            {{ $t("YourSeatingCode") }} <b> 789-478 </b>
+            {{ $t("YourSeatingCode") }} <b> {{ seatCode }} </b>
           </q-banner>
           <div class="row justify-center q-mt-md">
-            <q-input v-if="hasLeft" v-model="left" :class="`col ${ hasRight ? 'q-mr-md' : ''}`" color="secondary" :label="$t('LeftCode')" type="tel" dense outlined mask="###-###"/>
-            <q-input v-if="hasRight" v-model="right" class="col" color="secondary" :label="$t('RightCode')" type="tel" dense outlined mask="###-###"/>
+            <q-input v-if="hasLeft" v-model="left" :class="`col ${ hasRight ? 'q-mr-md' : ''}`" color="secondary" :label="$t('LeftCode')" type="tel" dense outlined 
+            />
+            <q-input v-if="hasRight" v-model="right" class="col" color="secondary" :label="$t('RightCode')" type="tel" dense outlined />
           </div>
         </q-card-section>
 
         <q-card-actions class="justify-between">
           <q-btn flat :label="$t('Cancel')" color="secondary" v-close-popup />
-          <q-btn flat :label="$t('Submit')" color="secondary" />
+          <q-btn flat :label="$t('Submit')" color="secondary" @click="submit" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -115,7 +131,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export default {
   name: "SeatingPlan",
@@ -130,7 +146,9 @@ export default {
     personalCol: Number,
     firstTime: Boolean,
     hasLeft: Boolean,
-    hasRight: Boolean
+    hasRight: Boolean,
+    seatCode: String,
+    neighbourCheckIsDone: Boolean
   },
 
   setup(props, ctx) {
@@ -140,6 +158,8 @@ export default {
 
     const left = ref(null)
     const right = ref(null)
+    const a = ref(null);
+    const b = ref(null);
 
     const showNeighPopup = ref(false);
 
@@ -151,13 +171,29 @@ export default {
       ctx.emit('selected', { row, col })
     }
 
+    const submit = () => {
+      ctx.emit('submitNeighInfo', { 
+        left: left.value, right: right.value 
+      })
+    }
+
+    const changeColor = (color, row, col) => {
+      ctx.emit('changeColor', { color, row, col });
+    }
+
+    watch(() => props.neighbourCheckIsDone, (newData) => {
+      showNeighPopup.value = !newData;
+    })
+
     return {
       neighbourColors,
       left,
       right,
       showPopupForNeigh,
       showNeighPopup,
-      select
+      select,
+      submit,
+      changeColor
     }
   },
 }
@@ -177,4 +213,9 @@ export default {
 button.without-icon i { 
   display: none
 }
+</style>
+
+<style lang="sass" scoped>
+.mySeat
+  background: $positive 
 </style>

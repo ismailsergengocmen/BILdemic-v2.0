@@ -26,6 +26,9 @@
       :hasLeft="personalCol != 0"
       :hasRight="personalCol != 4"
       @selected="selectSeat"
+      :seatCode="seatCode"
+      :neighbourCheckIsDone="neighbourCheckIsDone"
+      @submitNeighInfo="submitNeighInfo"
     />
 
   </div> 
@@ -36,6 +39,8 @@ import { ref, computed, watch, onBeforeMount } from 'vue'
 import { useQuasar } from 'quasar'
 import SeatingPlan from '../../components/courses/SeatingPlan.vue'
 import LectureManager from '../../classes/LectureManager'
+import { useI18n } from 'vue-i18n'
+import { Store } from '../../store/index'
 
 export default {
   name: "CourseSpecificPage",
@@ -45,6 +50,8 @@ export default {
   props: ['id'],
   setup(props, ctx) {
     const $q = useQuasar();
+    const { t } = useI18n({});
+    const lm = LectureManager.getInstance();
 
     const isMobile = computed(() => {
       return $q.screen.width < 800;
@@ -52,14 +59,16 @@ export default {
 
     const open = ref(!isMobile.value);
 
-    const lm = LectureManager.getInstance();
-
     const lectureInfo = ref(null);
     const lectureCode = ref(null);
     const lectureCodeIsCorrect = ref(false);
     const firstTime = ref(null);
     const personalCol = ref(null);
     const personalRow = ref(null);
+    const seatCode = ref(null);
+    const neighbourCheckIsDone = ref(false);
+
+    const UID = Store.state.settings.currentUserUID;
 
     watch(isMobile, () => {
       open.value = !isMobile.value;
@@ -86,7 +95,27 @@ export default {
     }
 
     const checkLectureCode = async () => {
-      lectureCodeIsCorrect.value = await lm.controlLectureCode(props.id, lectureCode.value)
+      lm.controlLectureCode(props.id, lectureCode.value).then(async (val) => {
+        lectureCodeIsCorrect.value = val;
+        if (!val) {
+          $q.notify({
+            position: 'top',
+            color: 'negative',
+            message: t('LectureCodeNotCorrect')
+          });
+        }
+        else {
+          $q.notify({
+            position: 'top',
+            color: 'positive',
+            message: t('LectureCodeCorrect')
+          });
+
+          await lm.changeColor(props.id, UID, 2);
+          await lm.updateSeatCode(props.id, UID);
+          seatCode.value = await lm.getSeatCode(props.id, UID);
+        }
+      })
     }
 
     const selectSeat = async (val) => {
@@ -95,6 +124,40 @@ export default {
       personalCol.value = val.col - 1;
       personalRow.value = val.row - 1;
       firstTime.value = false;
+    }
+
+    const submitNeighInfo = async (data) => {
+      lm.checkNeighbourSeatCode(props.id, UID, data.right, data.left).then((val) => {
+        if (val === 0) {
+          $q.notify({
+            position: 'top',
+            color: 'positive',
+            message: t('NeighInfoCorrect')
+          });
+          neighbourCheckIsDone.value = true;
+        }
+        else if (val === 1) {
+          $q.notify({
+            position: 'top',
+            color: 'negative',
+            message: t('NeighLeftWrong')
+          });
+        }
+        else if (val === 2) {
+          $q.notify({
+            position: 'top',
+            color: 'negative',
+            message: t('NeighRightWrong')
+          });
+        }
+        else {
+          $q.notify({
+            position: 'top',
+            color: 'negative',
+            message: t('NeightAllWrong')
+          });
+        }
+      })
     }
 
     return {
@@ -107,7 +170,10 @@ export default {
       selectSeat,
       personalCol,
       personalRow,
-      lectureInfo
+      lectureInfo,
+      seatCode,
+      submitNeighInfo,
+      neighbourCheckIsDone
     }
   },
 }
